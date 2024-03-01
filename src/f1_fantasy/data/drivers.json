@@ -1,0 +1,102 @@
+{
+  "Max Verstappen": {
+    "team": "Red Bull Racing",
+    "number": 33,
+    "price": 30.0
+  },
+  "Lando Norris": {
+    "team": "McLaren",
+    "number": 4,
+    "price": 23.0
+  },
+  "Sergio Perez": {
+    "team": "Red Bull Racing",
+    "number": 11,
+    "price": 20.8
+  },
+  "Lewis Hamilton": {
+    "team": "Mercedes",
+    "number": 44,
+    "price": 19.3
+  },
+  "Charles Leclerc": {
+    "team": "Ferrari",
+    "number": 16,
+    "price": 19.1
+  },
+  "Oscar Piastri": {
+    "team": "McLaren",
+    "number": 81,
+    "price": 19.0
+  },
+  "George Russell": {
+    "team": "Mercedes",
+    "number": 63,
+    "price": 18.8
+  },
+  "Carlos Sainz": {
+    "team": "Ferrari",
+    "number": 55,
+    "price": 18.5
+  },
+  "Fernando Alonso": {
+    "team": "Aston Martin",
+    "number": 14,
+    "price": 15.8
+  },
+  "Lance Stroll": {
+    "team": "Aston Martin",
+    "number": 18,
+    "price": 10.7
+  },
+  "Daniel Ricciardo": {
+    "team": "RB",
+    "number": 3,
+    "price": 9.0
+  },
+  "Yuji Tsunoda": {
+    "team": "RB",
+    "number": 22,
+    "price": 8.0
+  },
+  "Pierre Gasly": {
+    "team": "AlphaTauri",
+    "number": 10,
+    "price": 7.8
+  },
+  "Esteban Ocon": {
+    "team": "Alpine",
+    "number": 31,
+    "price": 7.8
+  },
+  "Alexander Albon": {
+    "team": "Williams",
+    "number": 23,
+    "price": 7.0
+  },
+  "Zhou Guanyu": {
+    "team": "Sauber",
+    "number": 24,
+    "price": 6.6
+  },
+  "Valtteri Bottas": {
+    "team": "Mercedes",
+    "number": 77,
+    "price": 6.4
+  },
+  "Nico Hulkenberg": {
+    "team": "Haas",
+    "number": 27,
+    "price": 6.4
+  },
+  "Kevin Magnussen": {
+    "team": "Haas",
+    "number": 20,
+    "price": 6.2
+  },
+  "Logan Sargeant": {
+    "team": "Williams",
+    "number": 88,
+    "price": 5.5
+  }
+}
