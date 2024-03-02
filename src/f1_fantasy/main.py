@@ -4,7 +4,7 @@ import itertools
 from copy import deepcopy
 from pathlib import Path
 
-from f1_fantasy.consts import MAX_CONSTRUCTORS_COST, MAX_DRIVERS_COST, MAX_TOTAL_COST
+from f1_fantasy.consts import MAX_CONSTRUCTORS_COST, MAX_DRIVERS_COST, MAX_TOTAL_COST, ROOT_DIR
 from f1_fantasy.game_objects import (
     CONSTRUCTORS_IGNORE_LIST,
     DRIVERS_IGNORE_LIST,
@@ -104,13 +104,19 @@ def compute_driver_constructor_combinations(drivers_set: set[Driver], constructo
     return highest_score_set
 
 
-def main():
-    Drivers.load_prices(Path("./data/driver_prices/20240301.csv"))
-    Constructors.load_prices(Path("./data/constructor_prices/20240301.csv"))
+def main(
+    driver_prices: Path,
+    constructor_prices: Path,
+    qualifying_finishing_positions: Path,
+    racing_finishing_positions: Path,
+) -> set[Team]:
+    Drivers.load_prices(driver_prices)
+    Constructors.load_prices(constructor_prices)
 
-    set_drivers_qualifying_positions(Path("./data/input/qualifying_finishing_positions.csv"))
+    set_drivers_qualifying_positions(qualifying_finishing_positions)
+    set_drivers_race_positions(racing_finishing_positions)
+
     check_drivers_qualifying_positions()
-    set_drivers_race_positions(Path("./data/input/race_finishing_positions.csv"))
     check_drivers_race_positions()
 
     for constructor in Constructors.all():
@@ -118,13 +124,19 @@ def main():
     drivers_set = compute_driver_combinations()
     constructors_set = compute_constructor_combinations()
     max_score_teams = compute_driver_constructor_combinations(drivers_set, constructors_set)
-    output_file = Path(f"./data/output/{datetime.datetime.utcnow()}")
-    output_file.parent.mkdir(parents=True, exist_ok=True)
-    with output_file.open("w+") as f:
-        for team in max_score_teams:
-            f.write(f"{team}\n")
-        f.write(str(len(max_score_teams)))
+    return max_score_teams
 
 
 if __name__ == "__main__":
-    main()
+    _max_score_teams = main(
+        driver_prices=Path(ROOT_DIR / "data" / "driver_prices" / "20240301.csv"),
+        constructor_prices=Path(ROOT_DIR / "data" / "constructor_prices" / "20240301.csv"),
+        qualifying_finishing_positions=Path(ROOT_DIR / "data" / "input" / "qualifying_finishing_positions.csv"),
+        racing_finishing_positions=Path(ROOT_DIR / "data" / "input" / "race_finishing_positions.csv"),
+    )
+    output_file = Path(ROOT_DIR / "data" / "output" / f"{datetime.datetime.utcnow()}")
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    with output_file.open("w+") as f:
+        for team in _max_score_teams:
+            f.write(f"{team}\n")
+        f.write(str(len(_max_score_teams)))
