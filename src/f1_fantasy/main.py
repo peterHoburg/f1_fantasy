@@ -90,7 +90,7 @@ def compute_driver_constructor_combinations(drivers_set: set[Driver], constructo
         cost = driver_cost + constructor_cost
         if cost > MAX_TOTAL_COST:
             continue
-        team = Team(drivers=deepcopy(list(combo[0])), constructors=deepcopy(list(combo[1])))
+        team = Team(drivers=list(combo[0]), constructors=list(combo[1]))
         team.compute_points()
         if team.points >= highest_score:
             highest_score = team.points
@@ -99,8 +99,9 @@ def compute_driver_constructor_combinations(drivers_set: set[Driver], constructo
     highest_score_set = set()
     for team in all_teams_set:
         if team.points >= highest_score:
-            highest_score_set.add(team)
-            print(team)
+            team_copy = Team(drivers=deepcopy(team.drivers), constructors=deepcopy(team.constructors))
+            team_copy.compute_points()
+            highest_score_set.add(team_copy)
     return highest_score_set
 
 
@@ -138,8 +139,10 @@ def setup():
     output_file.parent.mkdir(parents=True, exist_ok=True)
     with output_file.open("w+") as f:
         for team in _max_score_teams:
+            print(team)
             f.write(f"{team}\n")
         f.write(str(len(_max_score_teams)))
+        print(len(_max_score_teams))
 
 
 if __name__ == "__main__":
