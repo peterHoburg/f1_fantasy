@@ -237,9 +237,11 @@ class Drivers:
             cls.ESTEBAN,
             cls.PIERRE,
         ]
+
     @classmethod
     def get(cls, name: str):
         return getattr(cls, name)
+
     @classmethod
     def load_prices(cls, price_csv: Path):
         with price_csv.open() as f:

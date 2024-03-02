@@ -49,7 +49,6 @@ def set_drivers_qualifying_positions(qualifying_finishing_positions_csv: Path):
             driver.qualifying_position = int(i + 1)
 
 
-
 def set_drivers_race_positions(race_finishing_positions_csv: Path):
     with race_finishing_positions_csv.open() as f:
         reader = csv.DictReader(f)
@@ -57,7 +56,6 @@ def set_drivers_race_positions(race_finishing_positions_csv: Path):
             drivers_name = row["drivers_name"]
             driver = Drivers.get(drivers_name)
             driver.race_position = int(i + 1)
-
 
 
 def compute_driver_combinations():
