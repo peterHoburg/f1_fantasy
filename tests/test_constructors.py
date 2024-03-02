@@ -33,7 +33,7 @@ def test_fastest_lap():
     assert RED_BULL.points == 50
 
 
-def test_fastest_pitstops():
+def test_fastest_pit_stops():
     MAX.qualifying_position = 19
     MAX.race_position = 19
     MAX.fastest_lap = False
