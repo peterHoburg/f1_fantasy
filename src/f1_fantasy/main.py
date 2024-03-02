@@ -127,7 +127,7 @@ def main(
     return max_score_teams
 
 
-if __name__ == "__main__":
+def setup():
     _max_score_teams = main(
         driver_prices=Path(ROOT_DIR / "data" / "driver_prices" / "20240301.csv"),
         constructor_prices=Path(ROOT_DIR / "data" / "constructor_prices" / "20240301.csv"),
@@ -140,3 +140,7 @@ if __name__ == "__main__":
         for team in _max_score_teams:
             f.write(f"{team}\n")
         f.write(str(len(_max_score_teams)))
+
+
+if __name__ == "__main__":
+    setup()

@@ -1,7 +1,7 @@
 import csv
 from pathlib import Path
 
-from f1_fantasy.consts import QUALIFYING_PLACE_POINTS, RACE_PLACE_POINTS
+from f1_fantasy.consts import QUALIFYING_ONLY, QUALIFYING_PLACE_POINTS, RACE_PLACE_POINTS
 
 
 class Driver:
@@ -55,6 +55,8 @@ class Driver:
     def compute_points(self):
         self._points = 0
         self._compute_qualifying_points()
+        if QUALIFYING_ONLY["setting"] is True:
+            return
         self._compute_race_points()
         self._compute_race_position_points()
 
