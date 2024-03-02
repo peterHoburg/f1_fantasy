@@ -52,4 +52,3 @@ def test_fastest_pitstops():
     assert MAX.points == 0
     assert SERGIO.points == 0
     assert RED_BULL.points == 18
-

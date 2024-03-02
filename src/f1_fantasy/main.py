@@ -221,6 +221,7 @@ ALL_CONSTRUCTORS = [
     HAAS,
 ]
 
+
 def check_drivers_qualifying_positions():
     used_positions = set()
     for driver in ALL_DRIVERS:
@@ -231,6 +232,7 @@ def check_drivers_qualifying_positions():
             raise ValueError
         else:
             used_positions.add(driver.qualifying_position)
+
 
 def check_drivers_race_positions():
     used_positions = set()
@@ -295,7 +297,6 @@ def main():
     check_drivers_qualifying_positions()
     set_drivers_race_positions()
     check_drivers_race_positions()
-
 
 
 if __name__ == "__main__":
