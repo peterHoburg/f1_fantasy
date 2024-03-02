@@ -2,6 +2,7 @@ import csv
 from pathlib import Path
 
 from f1_fantasy.consts import QUALIFYING_ONLY, QUALIFYING_PLACE_POINTS, RACE_PLACE_POINTS
+from f1_fantasy.models import DriverPriceModel, ConstructorPriceModel, DriversEnum, ConstructorsEnum
 
 
 class Driver:
@@ -241,15 +242,13 @@ class Drivers:
         ]
 
     @classmethod
-    def get(cls, name: str):
-        return getattr(cls, name)
+    def get(cls, name: DriversEnum):
+        return getattr(cls, str(name.value).upper())
 
     @classmethod
-    def load_prices(cls, price_csv: Path):
-        with price_csv.open() as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                getattr(cls, row["driver_name"]).price = float(row["amount"])
+    def load_prices(cls, driver_prices: list[DriverPriceModel]):
+        for driver_price in driver_prices:
+            cls.get(driver_price.name).price = float(driver_price.price)
 
 
 class Constructors:
@@ -295,8 +294,8 @@ class Constructors:
     )
 
     @classmethod
-    def get(cls, name: str):
-        return getattr(cls, name)
+    def get(cls, name: ConstructorsEnum):
+        return getattr(cls, str(name.value).upper())
 
     @classmethod
     def all(cls):
@@ -314,11 +313,9 @@ class Constructors:
         ]
 
     @classmethod
-    def load_prices(cls, price_csv: Path):
-        with price_csv.open() as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                getattr(cls, row["constructor_name"]).price = float(row["amount"])
+    def load_prices(cls, constructor_prices: list[ConstructorPriceModel]):
+        for constructor_price in constructor_prices:
+            cls.get(constructor_price.name).price = float(constructor_price.price)
 
 
 DRIVERS_IGNORE_LIST = [

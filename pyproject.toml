@@ -10,6 +10,7 @@ packages = [{include = "f1_fantasy", from = "src"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 pydantic = "^2.6.3"
+pydantic-settings = "^2.2.1"
 
 
 [tool.poetry.group.dev.dependencies]

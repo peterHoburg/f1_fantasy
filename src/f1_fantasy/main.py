@@ -14,6 +14,7 @@ from f1_fantasy.game_objects import (
     Drivers,
     Team,
 )
+from f1_fantasy.models import DriverPriceModel, ConstructorPriceModel, FinishingPositionModel
 
 
 def check_drivers_qualifying_positions():
@@ -40,22 +41,19 @@ def check_drivers_race_positions():
             used_positions.add(driver.race_position)
 
 
-def set_drivers_qualifying_positions(qualifying_finishing_positions_csv: Path):
-    with qualifying_finishing_positions_csv.open() as f:
-        reader = csv.DictReader(f)
-        for i, row in enumerate(reader):
-            drivers_name = row["drivers_name"]
-            driver = Drivers.get(drivers_name)
-            driver.qualifying_position = int(i + 1)
+def set_drivers_positions(
+    qualifying_finishing_positions: FinishingPositionModel,
+    racing_finishing_positions: FinishingPositionModel
+):
+    for i, driver_name in enumerate(qualifying_finishing_positions.drivers):
+        drivers_name = driver_name
+        driver = Drivers.get(drivers_name)
+        driver.qualifying_position = int(i + 1)
 
-
-def set_drivers_race_positions(race_finishing_positions_csv: Path):
-    with race_finishing_positions_csv.open() as f:
-        reader = csv.DictReader(f)
-        for i, row in enumerate(reader):
-            drivers_name = row["drivers_name"]
-            driver = Drivers.get(drivers_name)
-            driver.race_position = int(i + 1)
+    for i, driver_name in enumerate(racing_finishing_positions.drivers):
+        drivers_name = driver_name
+        driver = Drivers.get(drivers_name)
+        driver.race_position = int(i + 1)
 
 
 def compute_driver_combinations():
@@ -105,20 +103,21 @@ def compute_driver_constructor_combinations(drivers_set: set[Driver], constructo
     return highest_score_set
 
 
-def main(
-    driver_prices: Path,
-    constructor_prices: Path,
-    qualifying_finishing_positions: Path,
-    racing_finishing_positions: Path,
+def calculations(
+    driver_prices: list[DriverPriceModel],
+    constructor_prices: list[ConstructorPriceModel],
+    qualifying_finishing_positions: FinishingPositionModel,
+    racing_finishing_positions: FinishingPositionModel,
 ) -> set[Team]:
     Drivers.load_prices(driver_prices)
     Constructors.load_prices(constructor_prices)
 
-    set_drivers_qualifying_positions(qualifying_finishing_positions)
-    set_drivers_race_positions(racing_finishing_positions)
+    set_drivers_positions(qualifying_finishing_positions, racing_finishing_positions)
 
     check_drivers_qualifying_positions()
     check_drivers_race_positions()
+    Drivers.MAX.fastest_lap = True
+    Drivers.CARLOS.driver_of_the_day = True
 
     for constructor in Constructors.all():
         constructor.compute_points()
@@ -128,12 +127,40 @@ def main(
     return max_score_teams
 
 
-def setup():
-    _max_score_teams = main(
-        driver_prices=Path(ROOT_DIR / "data" / "driver_prices" / "20240301.csv"),
-        constructor_prices=Path(ROOT_DIR / "data" / "constructor_prices" / "20240301.csv"),
-        qualifying_finishing_positions=Path(ROOT_DIR / "data" / "input" / "qualifying_finishing_positions.csv"),
-        racing_finishing_positions=Path(ROOT_DIR / "data" / "input" / "race_finishing_positions.csv"),
+def drivers_prices_from_csv(driver_prices_csv: Path) -> list[DriverPriceModel]:
+    with driver_prices_csv.open() as f:
+        reader = csv.DictReader(f)
+        return [DriverPriceModel.model_validate(row) for row in reader]
+
+
+def constructors_prices_from_csv(constructor_prices_csv: Path) -> list[ConstructorPriceModel]:
+    with constructor_prices_csv.open() as f:
+        reader = csv.DictReader(f)
+        return [ConstructorPriceModel.model_validate(row) for row in reader]
+
+
+def finishing_positions_from_csv(qualifying_finishing_positions_csv: Path) -> FinishingPositionModel:
+    with qualifying_finishing_positions_csv.open() as f:
+        reader = csv.DictReader(f)
+        driver_list = []
+        for driver in reader:
+            driver_list.append(driver["name"])
+        return FinishingPositionModel(drivers=driver_list)
+
+
+def main():
+    driver_prices = drivers_prices_from_csv(Path(ROOT_DIR / "data" / "driver_prices" / "20240301.csv"))
+    constructor_prices = constructors_prices_from_csv(Path(ROOT_DIR / "data" / "constructor_prices" / "20240301.csv"))
+    qualifying_finishing_positions = finishing_positions_from_csv(
+        Path(ROOT_DIR / "data" / "input" / "qualifying_finishing_positions.csv"))
+    racing_finishing_positions = finishing_positions_from_csv(
+        Path(ROOT_DIR / "data" / "input" / "race_finishing_positions.csv"))
+
+    _max_score_teams = calculations(
+        driver_prices=driver_prices,
+        constructor_prices=constructor_prices,
+        qualifying_finishing_positions=qualifying_finishing_positions,
+        racing_finishing_positions=racing_finishing_positions,
     )
     output_file = Path(ROOT_DIR / "data" / "output" / f"{datetime.datetime.utcnow()}")
     output_file.parent.mkdir(parents=True, exist_ok=True)
@@ -146,4 +173,4 @@ def setup():
 
 
 if __name__ == "__main__":
-    setup()
+    main()
