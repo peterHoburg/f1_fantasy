@@ -40,6 +40,8 @@ Run `poetry run python src/f1_fantasy/main.py`
 * The 3x DRS token is always applied
 * DNF/DNS are not taken into account
 
+I have only tested this on Linux with python 3.10. Let me know if there are any issues on other platforms.
+
 
 # Disclaimer
 THIS IS NOT AN OFFICIAL F1 PRODUCT. I AM NOT AFFILIATED WITH F1 IN ANY WAY.
