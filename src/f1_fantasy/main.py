@@ -130,20 +130,28 @@ class Constructor:
 
     def compute_constructors_qualifying_extra_points(self):
         qualifying_positions = [driver.qualifying_position for driver in self.drivers]
+
+        # None into q2 or q3
         if all(qualifying_position > 15 for qualifying_position in qualifying_positions):
             self._points -= 1
             return
+
+        # Both into q1
         if all(qualifying_position < 10 for qualifying_position in qualifying_positions):
             self._points += 10
             return
 
+        # One in q1
         if any(qualifying_position < 10 for qualifying_position in qualifying_positions):
             self._points += 5
             return
 
+        # One into q2
         if any(qualifying_position > 15 for qualifying_position in qualifying_positions):
             self._points += 2
             return
+
+        # Both into q2
         if any(qualifying_position < 15 for qualifying_position in qualifying_positions):
             self._points += 3
             return

@@ -13,8 +13,8 @@ def test_driver_of_the_day():
     SERGIO.driver_of_the_day = False
 
     RED_BULL.compute_points()
-    assert MAX.points == 45
-    assert RED_BULL.points == 35
+    assert MAX.points == 45  # 35 for points + 10 for driver of the day
+    assert RED_BULL.points == 40  # 35 for max + 5 for 1 in q 3
 
 
 def test_fastest_lap():
@@ -30,7 +30,7 @@ def test_fastest_lap():
 
     RED_BULL.compute_points()
     assert MAX.points == 45
-    assert RED_BULL.points == 45
+    assert RED_BULL.points == 50
 
 
 def test_fastest_pitstops():
@@ -51,4 +51,4 @@ def test_fastest_pitstops():
     RED_BULL.compute_points()
     assert MAX.points == 0
     assert SERGIO.points == 0
-    assert RED_BULL.points == 18
+    assert RED_BULL.points == 17 # 18 for pit stops but -1 for no q2
