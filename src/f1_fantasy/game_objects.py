@@ -52,8 +52,8 @@ class Driver:
     def compute_points(self):
         self._points = 0
         self._compute_qualifying_points()
-        # self._compute_race_points()
-        # self._compute_race_position_points()
+        self._compute_race_points()
+        self._compute_race_position_points()
 
     def _compute_qualifying_points(self):
         if self.qualifying_position is not None and self.qualifying_position <= 10:
