@@ -1,6 +1,5 @@
 import itertools
-from math import floor
-from pprint import pprint
+from copy import deepcopy
 
 qualifying_place_points = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
 race_place_points = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1]
@@ -8,7 +7,6 @@ race_place_points = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1]
 MAX_DRIVERS_COST = 100.0
 MAX_CONSTRUCTORS_COST = 100.0
 MAX_TOTAL_COST = 100.0
-
 
 
 class Driver:
@@ -22,13 +20,24 @@ class Driver:
         self.qualifying_position: int | None = None
         self.race_position: int | None = None
 
+        self.drs = False
+        self.extra_drs = False
+
     @property
     def points(self):
+        if self.drs:
+            return self._points * 2
+        elif self.extra_drs:
+            return self._points * 3
         return self._points
 
     @points.setter
     def points(self, value: int):
         self._points = value
+
+    @property
+    def constructors_points(self):
+        return self._points
 
     @property
     def qualifying_position(self):
@@ -75,7 +84,6 @@ class Driver:
         elif position_delta < 0:
             self._points += position_delta
 
-
     def __eq__(self, other):
         return self.name == other.name
 
@@ -83,7 +91,7 @@ class Driver:
         return hash(self.name)
 
     def __repr__(self):
-        return f"{self.name} - {self._points} points"
+        return f"{self.name} - {self.points} points"
 
 
 class Constructor:
@@ -108,7 +116,7 @@ class Constructor:
         self._points = 0
         for driver in self.drivers:
             driver.compute_points()
-            self._points += driver.points
+            self._points += driver.constructors_points
             if driver.driver_of_the_day is True:
                 self._points -= 10  # constructors do not get driver of the day bonuses
 
@@ -118,6 +126,27 @@ class Constructor:
             self._points += 5
         if self.third_fastest_pitstop:
             self._points += 3
+        self.compute_constructors_qualifying_extra_points()
+
+    def compute_constructors_qualifying_extra_points(self):
+        qualifying_positions = [driver.qualifying_position for driver in self.drivers]
+        if all(qualifying_position > 15 for qualifying_position in qualifying_positions):
+            self._points -= 1
+            return
+        if all(qualifying_position < 10 for qualifying_position in qualifying_positions):
+            self._points += 10
+            return
+
+        if any(qualifying_position < 10 for qualifying_position in qualifying_positions):
+            self._points += 5
+            return
+
+        if any(qualifying_position > 15 for qualifying_position in qualifying_positions):
+            self._points += 2
+            return
+        if any(qualifying_position < 15 for qualifying_position in qualifying_positions):
+            self._points += 3
+            return
 
     def __eq__(self, other):
         return self.name == other.name
@@ -126,7 +155,7 @@ class Constructor:
         return hash(self.name)
 
     def __repr__(self):
-        return f"{self.name} - {self._points} points"
+        return f"{self.name} - {self.points} points"
 
 
 class Team:
@@ -134,12 +163,21 @@ class Team:
         self.drivers = drivers
         self.constructors = constructors
         self.points = 0
+        self.price = sum(driver.price for driver in self.drivers) + sum(
+            constructor.price for constructor in self.constructors
+        )
 
     def compute_points(self):
         self.points = 0
+        # get driver with most points and second most points
         for driver in self.drivers:
+            driver.extra_drs = False
+            driver.drs = False
             driver.compute_points()
-            self.points += driver.points
+        drivers_list = sorted(self.drivers, key=lambda x: x.points, reverse=True)
+        drivers_list[0].extra_drs = True
+        drivers_list[1].drs = True
+        self.points += sum(driver.points for driver in self.drivers)
         for constructor in self.constructors:
             constructor.compute_points()
             self.points += constructor.points
@@ -274,6 +312,7 @@ BLACK_LIST_CONSTRUCTORS = [
     RED_BULL,
 ]
 
+
 def check_drivers_qualifying_positions():
     used_positions = set()
     for driver in ALL_DRIVERS:
@@ -367,6 +406,7 @@ def compute_driver_combinations():
             all_driver_set.add(combo)
     return all_driver_set
 
+
 def compute_constructor_combinations():
     all_constructors = set(ALL_CONSTRUCTORS).difference(set(BLACK_LIST_CONSTRUCTORS))
     all_constructor_combos = itertools.combinations(all_constructors, 2)
@@ -380,7 +420,7 @@ def compute_constructor_combinations():
 
 def compute_driver_constructor_combinations(drivers_set: set[Driver], constructors_set: set[Constructor]):
     all_combinations = itertools.product(drivers_set, constructors_set)
-    all_combinations_set = set()
+    all_teams_set = set()
     highest_score = 0
     for combo in all_combinations:
         driver_cost = sum(driver.price for driver in combo[0])
@@ -388,24 +428,19 @@ def compute_driver_constructor_combinations(drivers_set: set[Driver], constructo
         cost = driver_cost + constructor_cost
         if cost > MAX_TOTAL_COST:
             continue
-        drivers_score = sum(driver.points for driver in combo[0])
-        constructors_score = sum(constructor.points for constructor in combo[1])
-        if drivers_score + constructors_score >= highest_score:
-            highest_score = drivers_score + constructors_score
-            all_combinations_set.add(combo)
+        team = Team(drivers=deepcopy(list(combo[0])), constructors=deepcopy(list(combo[1])))
+        team.compute_points()
+        if team.points >= highest_score:
+            highest_score = team.points
+            all_teams_set.add(team)
 
     highest_score_set = set()
-    for combo in all_combinations_set:
-        drivers_score = sum(driver.points for driver in combo[0])
-        constructors_score = sum(constructor.points for constructor in combo[1])
-        if drivers_score + constructors_score >= highest_score:
-            cost = sum(driver.price for driver in combo[0]) + sum(constructor.price for constructor in combo[1])
-            team = Team(list(combo[0]), list(combo[1]))
-            team.compute_points()
+    for team in all_teams_set:
+        if team.points >= highest_score:
+            highest_score_set.add(team)
             print(team)
-            highest_score_set.add(combo)
-            # print(f"Cost: {floor(cost)}, Drivers: {drivers_score}, Constructors: {constructors_score}, Total: {drivers_score + constructors_score}, {combo}")
     return highest_score_set
+
 
 def main():
     set_drivers_qualifying_positions()
@@ -417,7 +452,10 @@ def main():
         constructor.compute_points()
     drivers_set = compute_driver_combinations()
     constructors_set = compute_constructor_combinations()
-    compute_driver_constructor_combinations(drivers_set, constructors_set)
+    max_score_teams = compute_driver_constructor_combinations(drivers_set, constructors_set)
+    print(len(max_score_teams))
+    # print(ALL_DRIVERS)
+    # print(ALL_CONSTRUCTORS)
 
 
 if __name__ == "__main__":
