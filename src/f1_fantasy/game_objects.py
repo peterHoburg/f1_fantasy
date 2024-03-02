@@ -322,9 +322,9 @@ class Constructors:
 
 
 DRIVERS_IGNORE_LIST = [
-    Drivers.MAX,
+    # Drivers.MAX,
 ]
 
 CONSTRUCTORS_IGNORE_LIST = [
-    Constructors.RED_BULL,
+    # Constructors.RED_BULL,
 ]
