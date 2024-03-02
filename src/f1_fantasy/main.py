@@ -1,3 +1,5 @@
+import csv
+import datetime
 import itertools
 from copy import deepcopy
 from pathlib import Path
@@ -38,63 +40,24 @@ def check_drivers_race_positions():
             used_positions.add(driver.race_position)
 
 
-def set_drivers_qualifying_positions():
-    Drivers.MAX.qualifying_position = 1
-    Drivers.CHARLES.qualifying_position = 2
-    Drivers.GEORGE.qualifying_position = 3
-    Drivers.CARLOS.qualifying_position = 4
-    Drivers.SERGIO.qualifying_position = 5
-    Drivers.FERNANDO.qualifying_position = 6
-    Drivers.LANDO.qualifying_position = 7
-    Drivers.OSCAR.qualifying_position = 8
-    Drivers.LEWIS.qualifying_position = 9
-    Drivers.NICO.qualifying_position = 10
-
-    Drivers.YUKI.qualifying_position = 11
-    Drivers.LANCE.qualifying_position = 12
-    Drivers.ALEXANDER.qualifying_position = 13
-    Drivers.DANIEL.qualifying_position = 14
-    Drivers.KEVIN.qualifying_position = 15
-    Drivers.VALTTERI.qualifying_position = 16
-    Drivers.ZHOU.qualifying_position = 17
-    Drivers.LOGAN.qualifying_position = 18
-    Drivers.ESTEBAN.qualifying_position = 19
-    Drivers.PIERRE.qualifying_position = 20
+def set_drivers_qualifying_positions(qualifying_finishing_positions_csv: Path):
+    with qualifying_finishing_positions_csv.open() as f:
+        reader = csv.DictReader(f)
+        for i, row in enumerate(reader):
+            drivers_name = row["drivers_name"]
+            driver = Drivers.get(drivers_name)
+            driver.qualifying_position = int(i + 1)
 
 
-def set_drivers_race_positions():
-    """
-    - is better
-    + is worse
-    """
-    Drivers.MAX.race_position = Drivers.MAX.qualifying_position
-    Drivers.CHARLES.race_position = Drivers.CHARLES.qualifying_position
 
-    Drivers.GEORGE.race_position = Drivers.GEORGE.qualifying_position + 2
-    Drivers.CARLOS.race_position = Drivers.CARLOS.qualifying_position - 1
-    Drivers.SERGIO.race_position = Drivers.SERGIO.qualifying_position - 1
+def set_drivers_race_positions(race_finishing_positions_csv: Path):
+    with race_finishing_positions_csv.open() as f:
+        reader = csv.DictReader(f)
+        for i, row in enumerate(reader):
+            drivers_name = row["drivers_name"]
+            driver = Drivers.get(drivers_name)
+            driver.race_position = int(i + 1)
 
-    Drivers.FERNANDO.race_position = Drivers.FERNANDO.qualifying_position + 1
-    Drivers.LANDO.race_position = Drivers.LANDO.qualifying_position - 1
-
-    Drivers.OSCAR.race_position = Drivers.OSCAR.qualifying_position + 1
-    Drivers.LEWIS.race_position = Drivers.LEWIS.qualifying_position - 1
-
-    Drivers.NICO.race_position = Drivers.NICO.qualifying_position
-
-    Drivers.YUKI.race_position = Drivers.YUKI.qualifying_position + 1
-    Drivers.LANCE.race_position = Drivers.LANCE.qualifying_position - 1
-
-    Drivers.ALEXANDER.race_position = Drivers.ALEXANDER.qualifying_position + 1
-    Drivers.DANIEL.race_position = Drivers.DANIEL.qualifying_position - 1
-
-    Drivers.KEVIN.race_position = Drivers.KEVIN.qualifying_position + 1
-    Drivers.VALTTERI.race_position = Drivers.VALTTERI.qualifying_position - 1
-
-    Drivers.ZHOU.race_position = Drivers.ZHOU.qualifying_position
-    Drivers.LOGAN.race_position = Drivers.LOGAN.qualifying_position
-    Drivers.ESTEBAN.race_position = Drivers.ESTEBAN.qualifying_position
-    Drivers.PIERRE.race_position = Drivers.PIERRE.qualifying_position
 
 
 def compute_driver_combinations():
@@ -147,9 +110,9 @@ def main():
     Drivers.load_prices(Path("./data/driver_prices/20240301.csv"))
     Constructors.load_prices(Path("./data/constructor_prices/20240301.csv"))
 
-    set_drivers_qualifying_positions()
+    set_drivers_qualifying_positions(Path("./data/input/qualifying_finishing_positions.csv"))
     check_drivers_qualifying_positions()
-    set_drivers_race_positions()
+    set_drivers_race_positions(Path("./data/input/race_finishing_positions.csv"))
     check_drivers_race_positions()
 
     for constructor in Constructors.all():
@@ -157,9 +120,12 @@ def main():
     drivers_set = compute_driver_combinations()
     constructors_set = compute_constructor_combinations()
     max_score_teams = compute_driver_constructor_combinations(drivers_set, constructors_set)
-    print(len(max_score_teams))
-    # print(ALL_DRIVERS)
-    # print(ALL_CONSTRUCTORS)
+    output_file = Path(f"./data/output/{datetime.datetime.utcnow()}")
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    with output_file.open("w+") as f:
+        for team in max_score_teams:
+            f.write(f"{team}\n")
+        f.write(str(len(max_score_teams)))
 
 
 if __name__ == "__main__":
