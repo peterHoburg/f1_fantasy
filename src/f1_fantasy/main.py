@@ -1,6 +1,14 @@
-qualifying_place_points = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+import itertools
+from math import floor
+from pprint import pprint
 
+qualifying_place_points = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
 race_place_points = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1]
+
+MAX_DRIVERS_COST = 100.0
+MAX_CONSTRUCTORS_COST = 100.0
+MAX_TOTAL_COST = 100.0
+
 
 
 class Driver:
@@ -67,6 +75,13 @@ class Driver:
         elif position_delta < 0:
             self._points += position_delta
 
+
+    def __eq__(self, other):
+        return self.name == other.name
+
+    def __hash__(self):
+        return hash(self.name)
+
     def __repr__(self):
         return f"{self.name} - {self._points} points"
 
@@ -103,6 +118,36 @@ class Constructor:
             self._points += 5
         if self.third_fastest_pitstop:
             self._points += 3
+
+    def __eq__(self, other):
+        return self.name == other.name
+
+    def __hash__(self):
+        return hash(self.name)
+
+    def __repr__(self):
+        return f"{self.name} - {self._points} points"
+
+
+class Team:
+    def __init__(self, drivers, constructors):
+        self.drivers = drivers
+        self.constructors = constructors
+        self.points = 0
+
+    def compute_points(self):
+        self.points = 0
+        for driver in self.drivers:
+            driver.compute_points()
+            self.points += driver.points
+        for constructor in self.constructors:
+            constructor.compute_points()
+            self.points += constructor.points
+
+    def __repr__(self):
+        drivers_ordered = sorted(self.drivers, key=lambda x: x.points, reverse=True)
+        constructors_ordered = sorted(self.constructors, key=lambda x: x.points, reverse=True)
+        return f"Total: {self.points}  Drivers: {drivers_ordered}  Constructors: {constructors_ordered}"
 
 
 MAX = Driver(name="Max Verstappen", price=30.0)
@@ -221,6 +266,13 @@ ALL_CONSTRUCTORS = [
     HAAS,
 ]
 
+BLACK_LIST_DRIVERS = [
+    MAX,
+]
+
+BLACK_LIST_CONSTRUCTORS = [
+    RED_BULL,
+]
 
 def check_drivers_qualifying_positions():
     used_positions = set()
@@ -240,7 +292,7 @@ def check_drivers_race_positions():
         if driver.race_position is None:
             continue
         if driver.race_position in used_positions:
-            print(f"Position {driver.race_position} is already used by another driver")
+            print(f"Position {driver.race_position} is already used by another driver. {driver.name}")
             raise ValueError
         else:
             used_positions.add(driver.race_position)
@@ -265,38 +317,107 @@ def set_drivers_qualifying_positions():
     KEVIN.qualifying_position = 15
     VALTTERI.qualifying_position = 16
     ZHOU.qualifying_position = 17
-    ESTEBAN.qualifying_position = 18
-    PIERRE.qualifying_position = 19
+    LOGAN.qualifying_position = 18
+    ESTEBAN.qualifying_position = 19
+    PIERRE.qualifying_position = 20
 
 
 def set_drivers_race_positions():
+    """
+    - is better
+    + is worse
+    """
     MAX.race_position = MAX.qualifying_position
     CHARLES.race_position = CHARLES.qualifying_position
-    GEORGE.race_position = GEORGE.qualifying_position - 2
-    CARLOS.race_position = CARLOS.qualifying_position + 1
-    SERGIO.race_position = SERGIO.qualifying_position + 1
-    FERNANDO.race_position = FERNANDO.qualifying_position
-    LANDO.race_position = LANDO.qualifying_position
-    OSCAR.race_position = OSCAR.qualifying_position - 1
-    LEWIS.race_position = LEWIS.qualifying_position + 1
+
+    GEORGE.race_position = GEORGE.qualifying_position + 2
+    CARLOS.race_position = CARLOS.qualifying_position - 1
+    SERGIO.race_position = SERGIO.qualifying_position - 1
+
+    FERNANDO.race_position = FERNANDO.qualifying_position + 1
+    LANDO.race_position = LANDO.qualifying_position - 1
+
+    OSCAR.race_position = OSCAR.qualifying_position + 1
+    LEWIS.race_position = LEWIS.qualifying_position - 1
+
     NICO.race_position = NICO.qualifying_position
 
-    YUKI.race_position = YUKI.qualifying_position
-    LANCE.race_position = LANCE.qualifying_position
-    ALEXANDER.race_position = ALEXANDER.qualifying_position
-    DANIEL.race_position = DANIEL.qualifying_position
-    KEVIN.race_position = KEVIN.qualifying_position
-    VALTTERI.race_position = VALTTERI.qualifying_position
+    YUKI.race_position = YUKI.qualifying_position + 1
+    LANCE.race_position = LANCE.qualifying_position - 1
+
+    ALEXANDER.race_position = ALEXANDER.qualifying_position + 1
+    DANIEL.race_position = DANIEL.qualifying_position - 1
+
+    KEVIN.race_position = KEVIN.qualifying_position + 1
+    VALTTERI.race_position = VALTTERI.qualifying_position - 1
+
     ZHOU.race_position = ZHOU.qualifying_position
+    LOGAN.race_position = LOGAN.qualifying_position
     ESTEBAN.race_position = ESTEBAN.qualifying_position
     PIERRE.race_position = PIERRE.qualifying_position
 
+
+def compute_driver_combinations():
+    all_drivers = set(ALL_DRIVERS).difference(set(BLACK_LIST_DRIVERS))
+    all_driver_combos = itertools.combinations(all_drivers, 5)
+    all_driver_set = set()
+    for combo in all_driver_combos:
+        driver_cost = sum(driver.price for driver in combo)
+        if driver_cost <= MAX_DRIVERS_COST:
+            all_driver_set.add(combo)
+    return all_driver_set
+
+def compute_constructor_combinations():
+    all_constructors = set(ALL_CONSTRUCTORS).difference(set(BLACK_LIST_CONSTRUCTORS))
+    all_constructor_combos = itertools.combinations(all_constructors, 2)
+    all_constructor_set = set()
+    for combo in all_constructor_combos:
+        constructor_cost = sum(constructor.price for constructor in combo)
+        if constructor_cost <= MAX_CONSTRUCTORS_COST:
+            all_constructor_set.add(combo)
+    return all_constructor_set
+
+
+def compute_driver_constructor_combinations(drivers_set: set[Driver], constructors_set: set[Constructor]):
+    all_combinations = itertools.product(drivers_set, constructors_set)
+    all_combinations_set = set()
+    highest_score = 0
+    for combo in all_combinations:
+        driver_cost = sum(driver.price for driver in combo[0])
+        constructor_cost = sum(constructor.price for constructor in combo[1])
+        cost = driver_cost + constructor_cost
+        if cost > MAX_TOTAL_COST:
+            continue
+        drivers_score = sum(driver.points for driver in combo[0])
+        constructors_score = sum(constructor.points for constructor in combo[1])
+        if drivers_score + constructors_score >= highest_score:
+            highest_score = drivers_score + constructors_score
+            all_combinations_set.add(combo)
+
+    highest_score_set = set()
+    for combo in all_combinations_set:
+        drivers_score = sum(driver.points for driver in combo[0])
+        constructors_score = sum(constructor.points for constructor in combo[1])
+        if drivers_score + constructors_score >= highest_score:
+            cost = sum(driver.price for driver in combo[0]) + sum(constructor.price for constructor in combo[1])
+            team = Team(list(combo[0]), list(combo[1]))
+            team.compute_points()
+            print(team)
+            highest_score_set.add(combo)
+            # print(f"Cost: {floor(cost)}, Drivers: {drivers_score}, Constructors: {constructors_score}, Total: {drivers_score + constructors_score}, {combo}")
+    return highest_score_set
 
 def main():
     set_drivers_qualifying_positions()
     check_drivers_qualifying_positions()
     set_drivers_race_positions()
     check_drivers_race_positions()
+
+    for constructor in ALL_CONSTRUCTORS:
+        constructor.compute_points()
+    drivers_set = compute_driver_combinations()
+    constructors_set = compute_constructor_combinations()
+    compute_driver_constructor_combinations(drivers_set, constructors_set)
 
 
 if __name__ == "__main__":
