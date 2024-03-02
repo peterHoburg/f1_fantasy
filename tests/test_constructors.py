@@ -51,4 +51,4 @@ def test_fastest_pit_stops():
     Constructors.RED_BULL.compute_points()
     assert Drivers.MAX.points == 0
     assert Drivers.SERGIO.points == 0
-    assert Constructors.RED_BULL.points == 17 # 18 for pit stops but -1 for no q2
+    assert Constructors.RED_BULL.points == 17  # 18 for pit stops but -1 for no q2

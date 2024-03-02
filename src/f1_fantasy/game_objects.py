@@ -1,7 +1,7 @@
 import csv
 from pathlib import Path
 
-from f1_fantasy.consts import RACE_PLACE_POINTS, QUALIFYING_PLACE_POINTS
+from f1_fantasy.consts import QUALIFYING_PLACE_POINTS, RACE_PLACE_POINTS
 
 
 class Driver:
@@ -309,6 +309,7 @@ class Constructors:
             reader = csv.DictReader(f)
             for row in reader:
                 getattr(cls, row["constructor_name"]).price = float(row["amount"])
+
 
 DRIVERS_IGNORE_LIST = [
     Drivers.MAX,

@@ -2,9 +2,16 @@ import itertools
 from copy import deepcopy
 from pathlib import Path
 
-from f1_fantasy.consts import MAX_DRIVERS_COST, MAX_CONSTRUCTORS_COST, MAX_TOTAL_COST
-from f1_fantasy.game_objects import Driver, Constructor, Team, Drivers, DRIVERS_IGNORE_LIST, CONSTRUCTORS_IGNORE_LIST, \
-    Constructors
+from f1_fantasy.consts import MAX_CONSTRUCTORS_COST, MAX_DRIVERS_COST, MAX_TOTAL_COST
+from f1_fantasy.game_objects import (
+    CONSTRUCTORS_IGNORE_LIST,
+    DRIVERS_IGNORE_LIST,
+    Constructor,
+    Constructors,
+    Driver,
+    Drivers,
+    Team,
+)
 
 
 def check_drivers_qualifying_positions():
