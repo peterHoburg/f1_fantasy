@@ -1,5 +1,5 @@
 from f1_fantasy.consts import QUALIFYING_PLACE_POINTS, RACE_PLACE_POINTS
-from f1_fantasy.models import DriverPriceModel, ConstructorPriceModel, DriversEnum, ConstructorsEnum
+from f1_fantasy.models import ConstructorPriceModel, ConstructorsEnum, DriverPriceModel, DriversEnum
 from f1_fantasy.settings import SETTINGS
 
 

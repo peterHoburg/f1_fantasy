@@ -1,3 +1,6 @@
 category,recipient
-fastest_lap,
-driver_of_the_day
+fastest_lap,MAX
+driver_of_the_day,CARLOS
+fastest_pitstop,FERRARI
+second_fastest_pitstop,FERRARI
+third_fastest_pitstop,RED_BULL

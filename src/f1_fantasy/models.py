@@ -25,6 +25,7 @@ class DriversEnum(Enum):
     ESTEBAN = "ESTEBAN"
     PIERRE = "PIERRE"
 
+
 class ConstructorsEnum(Enum):
     RED_BULL = "RED_BULL"
     MCLAREN = "MCLAREN"
@@ -36,6 +37,7 @@ class ConstructorsEnum(Enum):
     WILLIAMS = "WILLIAMS"
     SAUBER = "SAUBER"
     HAAS = "HAAS"
+
 
 class DriverPriceModel(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -54,3 +56,9 @@ class FinishingPositionModel(BaseModel):
     drivers: list[DriversEnum]
 
 
+class SpecialPoints(BaseModel):
+    fastest_lap: DriversEnum | None = None
+    driver_of_the_day: DriversEnum | None = None
+    fastest_pitstop: ConstructorsEnum | None = None
+    second_fastest_pitstop: ConstructorsEnum | None = None
+    third_fastest_pitstop: ConstructorsEnum | None = None

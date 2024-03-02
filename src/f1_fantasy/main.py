@@ -14,7 +14,8 @@ from f1_fantasy.game_objects import (
     Drivers,
     Team,
 )
-from f1_fantasy.models import DriverPriceModel, ConstructorPriceModel, FinishingPositionModel
+from f1_fantasy.models import ConstructorPriceModel, DriverPriceModel, FinishingPositionModel, SpecialPoints
+from f1_fantasy.settings import SETTINGS
 
 
 def check_drivers_qualifying_positions():
@@ -42,8 +43,7 @@ def check_drivers_race_positions():
 
 
 def set_drivers_positions(
-    qualifying_finishing_positions: FinishingPositionModel,
-    racing_finishing_positions: FinishingPositionModel
+    qualifying_finishing_positions: FinishingPositionModel, racing_finishing_positions: FinishingPositionModel
 ):
     for i, driver_name in enumerate(qualifying_finishing_positions.drivers):
         drivers_name = driver_name
@@ -54,6 +54,9 @@ def set_drivers_positions(
         drivers_name = driver_name
         driver = Drivers.get(drivers_name)
         driver.race_position = int(i + 1)
+
+    check_drivers_qualifying_positions()
+    check_drivers_race_positions()
 
 
 def compute_driver_combinations():
@@ -103,20 +106,37 @@ def compute_driver_constructor_combinations(drivers_set: set[Driver], constructo
     return highest_score_set
 
 
+def set_special_points(special_points: SpecialPoints):
+    if special_points.fastest_lap is not None:
+        driver = Drivers.get(special_points.fastest_lap)
+        driver.fastest_lap = True
+    if special_points.driver_of_the_day is not None:
+        driver = Drivers.get(special_points.driver_of_the_day)
+        driver.driver_of_the_day = True
+
+    if special_points.fastest_pitstop is not None:
+        constructor = Constructors.get(special_points.fastest_pitstop)
+        constructor.fastest_pitstop = True
+    if special_points.second_fastest_pitstop is not None:
+        constructor = Constructors.get(special_points.second_fastest_pitstop)
+        constructor.second_fastest_pitstop = True
+    if special_points.third_fastest_pitstop is not None:
+        constructor = Constructors.get(special_points.third_fastest_pitstop)
+        constructor.third_fastest_pitstop = True
+
+
 def calculations(
     driver_prices: list[DriverPriceModel],
     constructor_prices: list[ConstructorPriceModel],
     qualifying_finishing_positions: FinishingPositionModel,
     racing_finishing_positions: FinishingPositionModel,
+    special_points: SpecialPoints,
 ) -> set[Team]:
     Drivers.load_prices(driver_prices)
     Constructors.load_prices(constructor_prices)
 
     set_drivers_positions(qualifying_finishing_positions, racing_finishing_positions)
-
-    check_drivers_qualifying_positions()
-    check_drivers_race_positions()
-
+    set_special_points(special_points)
 
     for constructor in Constructors.all():
         constructor.compute_points()
@@ -147,19 +167,41 @@ def finishing_positions_from_csv(qualifying_finishing_positions_csv: Path) -> Fi
         return FinishingPositionModel(drivers=driver_list)
 
 
+def special_points_from_csv(special_points_csv: Path) -> SpecialPoints:
+    with special_points_csv.open() as f:
+        reader = csv.DictReader(f)
+        special_points_dict = {}
+        for row in reader:
+            special_points_dict[row["category"]] = row["recipient"]
+    return SpecialPoints.model_validate(special_points_dict)
+
+
+def set_chips_from_csv(chips_csv: Path):
+    with chips_csv.open() as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row["chips_to_enable"] == "extra_drs":
+                SETTINGS.chips.extra_drs = True
+
+
 def main():
     driver_prices = drivers_prices_from_csv(Path(ROOT_DIR / "data" / "driver_prices" / "20240301.csv"))
     constructor_prices = constructors_prices_from_csv(Path(ROOT_DIR / "data" / "constructor_prices" / "20240301.csv"))
     qualifying_finishing_positions = finishing_positions_from_csv(
-        Path(ROOT_DIR / "data" / "input" / "qualifying_finishing_positions.csv"))
+        Path(ROOT_DIR / "data" / "input" / "qualifying_finishing_positions.csv")
+    )
     racing_finishing_positions = finishing_positions_from_csv(
-        Path(ROOT_DIR / "data" / "input" / "race_finishing_positions.csv"))
+        Path(ROOT_DIR / "data" / "input" / "race_finishing_positions.csv")
+    )
+    special_points = special_points_from_csv(Path(ROOT_DIR / "data" / "input" / "special_points.csv"))
+    set_chips_from_csv(Path(ROOT_DIR / "data" / "input" / "chips.csv"))
 
     _max_score_teams = calculations(
         driver_prices=driver_prices,
         constructor_prices=constructor_prices,
         qualifying_finishing_positions=qualifying_finishing_positions,
         racing_finishing_positions=racing_finishing_positions,
+        special_points=special_points,
     )
     output_file = Path(ROOT_DIR / "data" / "output" / f"{datetime.datetime.utcnow()}")
     output_file.parent.mkdir(parents=True, exist_ok=True)
