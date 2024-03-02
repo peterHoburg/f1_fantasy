@@ -30,6 +30,9 @@ The positions are inferred by the order the drivers are listed in the file. The 
 This is where the output will be written to
 `f1_fantasy/src/f1_fantasy/data/output/<yyyy-mm-dd hh:mm:ss.ms>`
 
+### Running
+Run `poetry run python src/f1_fantasy/main.py`
+
 ## Known limitations
 * Tokens are not really taken into account
 * The 3x DRS token is always applied
