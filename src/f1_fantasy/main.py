@@ -38,7 +38,7 @@ class Driver:
     @race_position.setter
     def race_position(self, value: int):
         assert value is None or 1 <= value <= 20, "Race position must be between 1 and 20"
-        self._race_position = self._qualifying_position
+        self._race_position = value
 
     def compute_points(self):
         self._points = 0
