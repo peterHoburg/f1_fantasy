@@ -1,8 +1,11 @@
+import csv
+from pathlib import Path
+
 from f1_fantasy.consts import RACE_PLACE_POINTS, QUALIFYING_PLACE_POINTS
 
 
 class Driver:
-    def __init__(self, name, price):
+    def __init__(self, name: str, price: float = 0.0):
         self.name = name
         self.price = price
         self._points = 0
@@ -87,7 +90,7 @@ class Driver:
 
 
 class Constructor:
-    def __init__(self, name, price, drivers):
+    def __init__(self, name: str, drivers: list[Driver], price: float = 0.0):
         self.name = name
         self.price = price
         self.drivers: list[Driver] = drivers
@@ -189,26 +192,26 @@ class Team:
 
 
 class Drivers:
-    MAX = Driver(name="Max Verstappen", price=30.0)
-    CHARLES = Driver(name="Charles Leclerc", price=19.1)
-    GEORGE = Driver(name="George Russell", price=18.8)
-    CARLOS = Driver(name="Carlos Sainz", price=18.5)
-    SERGIO = Driver(name="Sergio Perez", price=20.8)
-    FERNANDO = Driver(name="Fernando Alonso", price=15.8)
-    LANDO = Driver(name="Lando Norris", price=23.0)
-    OSCAR = Driver(name="Oscar Piastri", price=19.0)
-    LEWIS = Driver(name="Lewis Hamilton", price=19.3)
-    NICO = Driver(name="Nico Hulkenberg", price=6.4)
-    YUKI = Driver(name="Yuki Tsunoda", price=8.0)
-    LANCE = Driver(name="Lance Stroll", price=10.7)
-    ALEXANDER = Driver(name="Alexander Albon", price=7.0)
-    DANIEL = Driver(name="Daniel Ricciardo", price=9.0)
-    KEVIN = Driver(name="Kevin Magnussen", price=6.2)
-    VALTTERI = Driver(name="Valtteri Bottas", price=6.4)
-    ZHOU = Driver(name="Zhou Guanyu", price=6.6)
-    LOGAN = Driver(name="Logan Sargeant", price=5.5)
-    ESTEBAN = Driver(name="Esteban Ocon", price=7.8)
-    PIERRE = Driver(name="Pierre Gasly", price=7.8)
+    MAX = Driver(name="Max Verstappen")
+    CHARLES = Driver(name="Charles Leclerc")
+    GEORGE = Driver(name="George Russell")
+    CARLOS = Driver(name="Carlos Sainz")
+    SERGIO = Driver(name="Sergio Perez")
+    FERNANDO = Driver(name="Fernando Alonso")
+    LANDO = Driver(name="Lando Norris")
+    OSCAR = Driver(name="Oscar Piastri")
+    LEWIS = Driver(name="Lewis Hamilton")
+    NICO = Driver(name="Nico Hulkenberg")
+    YUKI = Driver(name="Yuki Tsunoda")
+    LANCE = Driver(name="Lance Stroll")
+    ALEXANDER = Driver(name="Alexander Albon")
+    DANIEL = Driver(name="Daniel Ricciardo")
+    KEVIN = Driver(name="Kevin Magnussen")
+    VALTTERI = Driver(name="Valtteri Bottas")
+    ZHOU = Driver(name="Zhou Guanyu")
+    LOGAN = Driver(name="Logan Sargeant")
+    ESTEBAN = Driver(name="Esteban Ocon")
+    PIERRE = Driver(name="Pierre Gasly")
 
     @classmethod
     def all(cls):
@@ -235,56 +238,53 @@ class Drivers:
             cls.PIERRE,
         ]
 
+    @classmethod
+    def load_prices(cls, price_csv: Path):
+        with price_csv.open() as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                getattr(cls, row["driver_name"]).price = float(row["amount"])
+
 
 class Constructors:
     RED_BULL = Constructor(
         name="Red Bull Racing",
-        price=27.9,
         drivers=[Drivers.MAX, Drivers.SERGIO],
     )
     MCLAREN = Constructor(
         name="McLaren",
-        price=23.2,
         drivers=[Drivers.LANDO, Drivers.OSCAR],
     )
     MERCEDES = Constructor(
         name="Mercedes",
-        price=20.1,
         drivers=[Drivers.LEWIS, Drivers.GEORGE],
     )
     FERRARI = Constructor(
         name="Ferrari",
-        price=19.3,
         drivers=[Drivers.CHARLES, Drivers.CARLOS],
     )
     ASTON_MARTIN = Constructor(
         name="Aston Martin",
-        price=13.6,
         drivers=[Drivers.FERNANDO, Drivers.LANCE],
     )
     RB = Constructor(
         name="RB",
-        price=8.5,
         drivers=[Drivers.DANIEL, Drivers.YUKI],
     )
     ALPINE = Constructor(
         name="Alpine",
-        price=8.4,
         drivers=[Drivers.PIERRE, Drivers.ESTEBAN],
     )
     WILLIAMS = Constructor(
         name="Williams",
-        price=6.3,
         drivers=[Drivers.ALEXANDER, Drivers.LOGAN],
     )
     SAUBER = Constructor(
         name="Sauber",
-        price=6.6,
         drivers=[Drivers.ZHOU, Drivers.VALTTERI],
     )
     HAAS = Constructor(
         name="Haas",
-        price=6.3,
         drivers=[Drivers.NICO, Drivers.KEVIN],
     )
 
@@ -302,6 +302,13 @@ class Constructors:
             cls.SAUBER,
             cls.HAAS,
         ]
+
+    @classmethod
+    def load_prices(cls, price_csv: Path):
+        with price_csv.open() as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                getattr(cls, row["constructor_name"]).price = float(row["amount"])
 
 DRIVERS_IGNORE_LIST = [
     Drivers.MAX,

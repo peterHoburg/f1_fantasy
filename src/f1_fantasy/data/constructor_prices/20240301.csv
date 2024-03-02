@@ -1,11 +1,11 @@
 constructor_name,amount
-Red Bull Racing,27.9
-McLaren,23.2
-Mercedes,20.1
-Ferrari,19.3
-Aston Martin,13.6
+RED_BULL,27.9
+MCLAREN,23.2
+MERCEDES,20.1
+FERRARI,19.3
+ASTON_MARTIN,13.6
 RB,8.5
-Alpine,8.4
-Sauber,6.6
-Williams,6.3
-Haas,6.3
+ALPINE,8.4
+SAUBER,6.6
+WILLIAMS,6.3
+HAAS,6.3

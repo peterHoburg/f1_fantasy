@@ -1,5 +1,6 @@
 import itertools
 from copy import deepcopy
+from pathlib import Path
 
 from f1_fantasy.consts import MAX_DRIVERS_COST, MAX_CONSTRUCTORS_COST, MAX_TOTAL_COST
 from f1_fantasy.game_objects import Driver, Constructor, Team, Drivers, DRIVERS_IGNORE_LIST, CONSTRUCTORS_IGNORE_LIST, \
@@ -136,6 +137,9 @@ def compute_driver_constructor_combinations(drivers_set: set[Driver], constructo
 
 
 def main():
+    Drivers.load_prices(Path("./data/driver_prices/20240301.csv"))
+    Constructors.load_prices(Path("./data/constructor_prices/20240301.csv"))
+
     set_drivers_qualifying_positions()
     check_drivers_qualifying_positions()
     set_drivers_race_positions()
