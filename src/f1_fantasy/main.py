@@ -116,8 +116,7 @@ def calculations(
 
     check_drivers_qualifying_positions()
     check_drivers_race_positions()
-    Drivers.MAX.fastest_lap = True
-    Drivers.CARLOS.driver_of_the_day = True
+
 
     for constructor in Constructors.all():
         constructor.compute_points()

@@ -19,4 +19,7 @@ class Chips(BaseModel):
 
 class Settings(BaseSettings):
     chips: Chips = Chips()
+    qualifying_only: bool = False
 
+
+SETTINGS = Settings()

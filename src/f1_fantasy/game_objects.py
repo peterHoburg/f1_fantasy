@@ -1,8 +1,6 @@
-import csv
-from pathlib import Path
-
-from f1_fantasy.consts import QUALIFYING_ONLY, QUALIFYING_PLACE_POINTS, RACE_PLACE_POINTS
+from f1_fantasy.consts import QUALIFYING_PLACE_POINTS, RACE_PLACE_POINTS
 from f1_fantasy.models import DriverPriceModel, ConstructorPriceModel, DriversEnum, ConstructorsEnum
+from f1_fantasy.settings import SETTINGS
 
 
 class Driver:
@@ -56,7 +54,7 @@ class Driver:
     def compute_points(self):
         self._points = 0
         self._compute_qualifying_points()
-        if QUALIFYING_ONLY["setting"] is True:
+        if SETTINGS.qualifying_only is True:
             return
         self._compute_race_points()
         self._compute_race_position_points()
@@ -181,8 +179,11 @@ class Team:
             driver.drs = False
             driver.compute_points()
         drivers_list = sorted(self.drivers, key=lambda x: x.points, reverse=True)
-        drivers_list[0].extra_drs = True
-        drivers_list[1].drs = True
+        if SETTINGS.chips.extra_drs is True:
+            drivers_list[0].extra_drs = True
+            drivers_list[1].drs = True
+        else:
+            drivers_list[0].drs = True
         self.points += sum(driver.points for driver in self.drivers)
         for constructor in self.constructors:
             constructor.compute_points()

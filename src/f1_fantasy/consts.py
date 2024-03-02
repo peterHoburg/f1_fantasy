@@ -8,4 +8,3 @@ MAX_CONSTRUCTORS_COST = 100.0
 MAX_TOTAL_COST = 100.0
 
 ROOT_DIR = Path(__file__).parent
-QUALIFYING_ONLY = {"setting": False}
