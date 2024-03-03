@@ -1,5 +1,6 @@
 import datetime
 import shutil
+import time
 from pathlib import Path
 
 import typer
@@ -42,7 +43,7 @@ def run():
         racing_finishing_positions=racing_finishing_positions,
         special_points=special_points,
     )
-    output_file = Path(CURRENT_DIR / "data" / "output" / f"{datetime.datetime.utcnow()}")
+    output_file = Path(CURRENT_DIR / "data" / "output" / f"{int(time.time())}")
     output_file.parent.mkdir(parents=True, exist_ok=True)
     with output_file.open("w+") as f:
         for team in _max_score_teams:
