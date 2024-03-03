@@ -1,16 +1,23 @@
 [tool.poetry]
 name = "f1-fantasy"
-version = "0.1.0"
+version = "0.1.3"
 description = ""
 authors = ["Peter <peterHoburg@users.noreply.github.com>"]
 readme = "README.md"
-packages = [{include = "f1_fantasy", from = "src"}]
+packages = [
+    {include = "f1_fantasy", from = "src"}
+]
+exclude = ["f1_fantasy/src/data/output"]
+
+[tool.poetry.scripts]
+f1-fantasy = 'f1_fantasy.__main__:app'
 
 
 [tool.poetry.dependencies]
 python = "^3.10"
 pydantic = "^2.6.3"
 pydantic-settings = "^2.2.1"
+typer = {extras = ["all"], version = "^0.9.0"}
 
 
 [tool.poetry.group.dev.dependencies]

@@ -185,8 +185,8 @@ def set_chips_from_csv(chips_csv: Path):
 
 
 def main():
-    driver_prices = drivers_prices_from_csv(Path(ROOT_DIR / "data" / "driver_prices" / "20240301.csv"))
-    constructor_prices = constructors_prices_from_csv(Path(ROOT_DIR / "data" / "constructor_prices" / "20240301.csv"))
+    driver_prices = drivers_prices_from_csv(Path(ROOT_DIR / "data" / "input" / "prices_drivers.csv"))
+    constructor_prices = constructors_prices_from_csv(Path(ROOT_DIR / "data" / "input" / "prices_constructors.csv"))
     qualifying_finishing_positions = finishing_positions_from_csv(
         Path(ROOT_DIR / "data" / "input" / "qualifying_finishing_positions.csv")
     )
