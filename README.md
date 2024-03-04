@@ -111,7 +111,7 @@ The file already contains the special points for the first race of 2024.
 
 ## Output
 This is where the output will be written to
-`f1_fantasy/src/f1_fantasy/data/output/<epoch_time>`
+`<running_dir>/data/output/<epoch_time>`
 
 # Running
 ## Via pip
