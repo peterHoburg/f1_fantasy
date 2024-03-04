@@ -29,11 +29,11 @@ def setup():
 def update_prices():
     current_price_drivers = Path(CURRENT_DIR / "data" / "input" / "price_drivers.csv")
     new_price_drivers = Path(ROOT_DIR / "data" / "input" / "price_drivers.csv")
-    new_price_drivers.replace(current_price_drivers)
+    shutil.copy(new_price_drivers, current_price_drivers)
 
     current_price_constructors = Path(CURRENT_DIR / "data" / "input" / "price_constructors.csv")
     new_price_constructors = Path(ROOT_DIR / "data" / "input" / "price_constructors.csv")
-    new_price_constructors.replace(current_price_constructors)
+    shutil.copy(new_price_constructors, current_price_constructors)
 
 
 @app.command()

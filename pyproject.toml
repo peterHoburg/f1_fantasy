@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "f1-fantasy"
-version = "0.4.0"
+version = "0.5.0"
 description = ""
 authors = ["Peter <peterHoburg@users.noreply.github.com>"]
 readme = "README.md"
