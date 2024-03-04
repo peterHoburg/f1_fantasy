@@ -31,17 +31,15 @@ def run():
         typer.echo("No input data found. Run setup command first: f1-fantasy setup")
         return
 
-    main(
-        drivers_price_csv=Path(CURRENT_DIR / "data" / "input" / "price_drivers.csv"),
-        constructors_price_csv=Path(CURRENT_DIR / "data" / "input" / "price_constructors.csv"),
-        qualifying_finishing_positions=Path(CURRENT_DIR / "data" / "input" / "finishing_positions_qualifying.csv"),
-        racing_finishing_positions= Path(CURRENT_DIR / "data" / "input" / "finishing_positions_race.csv"),
-        special_points=Path(CURRENT_DIR / "data" / "input" / "special_points.csv"),
-        chips=Path(CURRENT_DIR / "data" / "input" / "chips.csv"),
-        output_file=Path(CURRENT_DIR / "data" / "output" / f"{datetime.utcnow()}"),
-        ignore_constructors=Path(CURRENT_DIR / "data" / "input" / "ignore_constructors.csv"),
-        ignore_drivers=Path(CURRENT_DIR / "data" / "input" / "ignore_drivers.csv"),
-    )
+    main(chips_path=Path(CURRENT_DIR / "data" / "input" / "chips.csv"), finishing_positions_qualifying_path=Path(
+        CURRENT_DIR / "data" / "input" / "finishing_positions_qualifying.csv"),
+         finishing_positions_race_path=Path(CURRENT_DIR / "data" / "input" / "finishing_positions_race.csv"),
+         ignore_constructors_path=Path(CURRENT_DIR / "data" / "input" / "ignore_constructors.csv"),
+         ignore_drivers_path=Path(CURRENT_DIR / "data" / "input" / "ignore_drivers.csv"),
+         price_constructors_path=Path(CURRENT_DIR / "data" / "input" / "price_constructors.csv"),
+         price_drivers_path=Path(CURRENT_DIR / "data" / "input" / "price_drivers.csv"),
+         special_points_path=Path(CURRENT_DIR / "data" / "input" / "special_points.csv"),
+         output_file_path=Path(CURRENT_DIR / "data" / "output" / f"{time.time()}"))
 
 
 

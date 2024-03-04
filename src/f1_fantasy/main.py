@@ -1,8 +1,10 @@
 import csv
 import datetime
 import itertools
+import time
 from copy import deepcopy
 from pathlib import Path
+from typing import TextIO
 
 from f1_fantasy.consts import MAX_CONSTRUCTORS_COST, MAX_DRIVERS_COST, MAX_TOTAL_COST, ROOT_DIR
 from f1_fantasy.game_objects import (
@@ -201,43 +203,71 @@ def set_ignores_from_csvs(ignore_constructors: Path, ignore_drivers: Path):
             DRIVERS_IGNORE_LIST.append(driver)
 
 
-def main(drivers_price_csv: Path, constructors_price_csv: Path, qualifying_finishing_positions: Path,
-         racing_finishing_positions: Path, special_points: Path, chips: Path, output_file: Path,
-         ignore_constructors: Path, ignore_drivers: Path,
-         ):
-    driver_prices = drivers_prices_from_csv(drivers_price_csv)
-    constructor_prices = constructors_prices_from_csv(constructors_price_csv)
-    qualifying_finishing_positions = finishing_positions_from_csv(qualifying_finishing_positions)
-    racing_finishing_positions = finishing_positions_from_csv(racing_finishing_positions)
-    special_points = special_points_from_csv(special_points)
-    set_chips_from_csv(chips)
-    set_ignores_from_csvs(ignore_constructors=ignore_constructors, ignore_drivers=ignore_drivers)
+def write_csv_to_output(f: TextIO, csv_path: Path):
+    with csv_path.open() as cp_csv:
+        reader = csv.DictReader(cp_csv)
+        f.write(f"\n{csv_path.name}:\n")
+        for row in reader:
+            f.write(str(row) + "\n")
+
+def main(
+    chips_path: Path,
+    finishing_positions_qualifying_path: Path,
+    finishing_positions_race_path: Path,
+    ignore_constructors_path: Path,
+    ignore_drivers_path: Path,
+    price_constructors_path: Path,
+    price_drivers_path: Path,
+    special_points_path: Path,
+    output_file_path: Path,
+):
+    driver_prices = drivers_prices_from_csv(price_drivers_path)
+    constructor_prices = constructors_prices_from_csv(price_constructors_path)
+    finishing_positions_qualifying = finishing_positions_from_csv(finishing_positions_qualifying_path)
+    finishing_positions_race = finishing_positions_from_csv(finishing_positions_race_path)
+    special_points = special_points_from_csv(special_points_path)
+    set_chips_from_csv(chips_path)
+    set_ignores_from_csvs(ignore_constructors=ignore_constructors_path, ignore_drivers=ignore_drivers_path)
 
     _max_score_teams = calculations(
         driver_prices=driver_prices,
         constructor_prices=constructor_prices,
-        qualifying_finishing_positions=qualifying_finishing_positions,
-        racing_finishing_positions=racing_finishing_positions,
+        qualifying_finishing_positions=finishing_positions_qualifying,
+        racing_finishing_positions=finishing_positions_race,
         special_points=special_points,
     )
-    output_file.parent.mkdir(parents=True, exist_ok=True)
-    with output_file.open("w+") as f:
+    output_file_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_file_path.open("w+") as f:
+        print(f"Total teams: {len(_max_score_teams)}")
+        f.write(f"Total teams: {len(_max_score_teams)}\n")
         for team in _max_score_teams:
             print(team)
             f.write(f"{team}\n")
-        f.write(str(len(_max_score_teams)))
-        print(len(_max_score_teams))
+
+        f.write("\n" + "#" * 120)
+        f.write("\n" + "#" * 120)
+        f.write("\nOutput generated using the following input:\n")
+
+        write_csv_to_output(f, chips_path)
+        write_csv_to_output(f, finishing_positions_qualifying_path)
+        write_csv_to_output(f, finishing_positions_race_path)
+        write_csv_to_output(f, ignore_constructors_path)
+        write_csv_to_output(f, ignore_drivers_path)
+        write_csv_to_output(f, price_constructors_path)
+        write_csv_to_output(f, price_drivers_path)
+        write_csv_to_output(f, special_points_path)
+
+    print(f"Output written to {output_file_path}")
+
 
 
 if __name__ == "__main__":
-    main(
-        drivers_price_csv=Path(ROOT_DIR / "data" / "input" / "price_drivers.csv"),
-        constructors_price_csv=Path(ROOT_DIR / "data" / "input" / "price_constructors.csv"),
-        qualifying_finishing_positions=Path(ROOT_DIR / "data" / "input" / "finishing_positions_qualifying.csv"),
-        racing_finishing_positions=Path(ROOT_DIR / "data" / "input" / "finishing_positions_race.csv"),
-        special_points=Path(ROOT_DIR / "data" / "input" / "special_points.csv"),
-        chips=Path(ROOT_DIR / "data" / "input" / "chips.csv"),
-        output_file=Path(ROOT_DIR / "data" / "output" / f"{datetime.datetime.utcnow()}"),
-        ignore_constructors=Path(ROOT_DIR / "data" / "input" / "ignore_constructors.csv"),
-        ignore_drivers=Path(ROOT_DIR / "data" / "input" / "ignore_drivers.csv"),
-    )
+    main(chips_path=Path(ROOT_DIR / "data" / "input" / "chips.csv"),
+         finishing_positions_qualifying_path=Path(ROOT_DIR / "data" / "input" / "finishing_positions_qualifying.csv"),
+         finishing_positions_race_path=Path(ROOT_DIR / "data" / "input" / "finishing_positions_race.csv"),
+         ignore_constructors_path=Path(ROOT_DIR / "data" / "input" / "ignore_constructors.csv"),
+         ignore_drivers_path=Path(ROOT_DIR / "data" / "input" / "ignore_drivers.csv"),
+         price_constructors_path=Path(ROOT_DIR / "data" / "input" / "price_constructors.csv"),
+         price_drivers_path=Path(ROOT_DIR / "data" / "input" / "price_drivers.csv"),
+         special_points_path=Path(ROOT_DIR / "data" / "input" / "special_points.csv"),
+         output_file_path=Path(ROOT_DIR / "data" / "output" / f"{time.time()}"))

@@ -1,6 +1,69 @@
+from dataclasses import dataclass
+
 from f1_fantasy.consts import QUALIFYING_PLACE_POINTS, RACE_PLACE_POINTS
 from f1_fantasy.models import ConstructorPriceModel, ConstructorsEnum, DriverPriceModel, DriversEnum
 from f1_fantasy.settings import SETTINGS
+
+
+@dataclass
+class DriverPointsBreakdown:
+    qualifying_position: int = 0
+
+    race_position: int = 0
+    race_positions_changed: int = 0
+    race_overtake_bonus: int = 0
+
+    driver_of_the_day: int = 0
+    fastest_lap: int = 0
+    drs_multiplier: int = 1
+
+    def __repr__(self):
+        repr_str = (
+            f"qualifying: {self.qualifying_position} "
+            f"race_position: {self.race_position} "
+            f"race_position_changed: {self.race_positions_changed} "
+            f"race_overtake_bonus: {self.race_overtake_bonus} "
+        )
+        if self.driver_of_the_day != 0:
+            repr_str += f" driver_of_the_day: {self.driver_of_the_day} "
+        if self.fastest_lap != 0:
+            repr_str += f" fastest_lap: {self.fastest_lap} "
+        if self.drs_multiplier != 1:
+            repr_str += f" drs_multiplier: {self.drs_multiplier} "
+
+        repr_str += f" total_pre_drs: {self.qualifying_position + self.race_position + self.race_positions_changed + self.race_overtake_bonus + self.driver_of_the_day + self.fastest_lap}"
+        return repr_str
+
+
+@dataclass
+class ConstructorPointsBreakdown:
+    qualifying_position: int = 0
+    driver_qualifying_bonus: int = 0
+
+    race_position: int = 0
+    race_positions_changed: int = 0
+    race_overtake_bonus: int = 0
+
+    fastest_pitstop: int = 0
+    second_fastest_pitstop: int = 0
+    third_fastest_pitstop: int = 0
+
+    def __repr__(self):
+        repr_str = (
+            f"qualifying: {self.qualifying_position} "
+            f"driver_qualifying_bonus: {self.driver_qualifying_bonus} "
+            f"race_position: {self.race_position} "
+            f"race_position_changed: {self.race_positions_changed} "
+            f"race_overtake_bonus: {self.race_overtake_bonus} "
+        )
+        if self.fastest_pitstop != 0:
+            repr_str += f" fastest_pitstop: {self.fastest_pitstop} "
+        if self.second_fastest_pitstop != 0:
+            repr_str += f" second_fastest_pitstop: {self.second_fastest_pitstop} "
+        if self.third_fastest_pitstop != 0:
+            repr_str += f" third_fastest_pitstop: {self.third_fastest_pitstop} "
+
+        return repr_str
 
 
 class Driver:
@@ -14,15 +77,20 @@ class Driver:
         self.qualifying_position: int | None = None
         self.race_position: int | None = None
 
+        self.points_breakdown: DriverPointsBreakdown = DriverPointsBreakdown()
+
         self.drs = False
         self.extra_drs = False
 
     @property
     def points(self):
         if self.drs:
+            self.points_breakdown.drs_multiplier = 2
             return self._points * 2
         elif self.extra_drs:
+            self.points_breakdown.drs_multiplier = 3
             return self._points * 3
+        self.points_breakdown.drs_multiplier = 1
         return self._points
 
     @points.setter
@@ -52,6 +120,7 @@ class Driver:
         self._race_position = value
 
     def compute_points(self):
+        self.points_breakdown: DriverPointsBreakdown = DriverPointsBreakdown()
         self._points = 0
         self._compute_qualifying_points()
         if SETTINGS.qualifying_only is True:
@@ -60,23 +129,32 @@ class Driver:
         self._compute_race_position_points()
 
     def _compute_qualifying_points(self):
+        points_change = 0
         if self.qualifying_position is not None and self.qualifying_position <= 10:
-            self._points += QUALIFYING_PLACE_POINTS[self.qualifying_position - 1]
+            points_change = QUALIFYING_PLACE_POINTS[self.qualifying_position - 1]
         elif self.qualifying_position is None:
-            self._points -= 20
+            points_change = -20
+        self.points_breakdown.qualifying_position = points_change
+        self._points += points_change
 
     def _compute_race_points(self):
         if self.race_position is not None and self.race_position <= 10:
             self._points += RACE_PLACE_POINTS[self.race_position - 1]
+            self.points_breakdown.race_position = RACE_PLACE_POINTS[self.race_position - 1]
             if self.fastest_lap:
                 self._points += 10
+                self.points_breakdown.fastest_lap = 10
         if self.driver_of_the_day:
             self._points += 10
+            self.points_breakdown.driver_of_the_day = 10
 
     def _compute_race_position_points(self):
         position_delta = self.qualifying_position - self.race_position
+        self.points_breakdown.race_positions_changed = position_delta
+
         if position_delta > 0:
             self._points += position_delta * 2
+            self.points_breakdown.race_overtake_bonus = position_delta
         elif position_delta < 0:
             self._points += position_delta
 
@@ -87,7 +165,7 @@ class Driver:
         return hash(self.name)
 
     def __repr__(self):
-        return f"{self.name} - {self.points} points"
+        return f"\n{self.name} - {self.points} points: breakdown: {self.points_breakdown}"
 
 
 class Constructor:
@@ -100,6 +178,8 @@ class Constructor:
         self.second_fastest_pitstop = False
         self.third_fastest_pitstop = False
 
+        self.points_breakdown: ConstructorPointsBreakdown = ConstructorPointsBreakdown()
+
     @property
     def points(self):
         return self._points
@@ -109,18 +189,30 @@ class Constructor:
         self._points = value
 
     def compute_points(self):
+        self.points_breakdown: ConstructorPointsBreakdown = ConstructorPointsBreakdown()
         self._points = 0
         for driver in self.drivers:
             driver.compute_points()
+            driver_breakdown = driver.points_breakdown
+
+            self.points_breakdown.qualifying_position += driver_breakdown.qualifying_position
+
+            self.points_breakdown.race_position += driver.points_breakdown.race_position
+            self.points_breakdown.race_positions_changed += driver.points_breakdown.race_positions_changed
+            self.points_breakdown.race_overtake_bonus += driver.points_breakdown.race_overtake_bonus
+
             self._points += driver.constructors_points
             if driver.driver_of_the_day is True:
                 self._points -= 10  # constructors do not get driver of the day bonuses
 
         if self.fastest_pitstop:
+            self.points_breakdown.fastest_pitstop = 10
             self._points += 10
         if self.second_fastest_pitstop:
+            self.points_breakdown.second_fastest_pitstop = 5
             self._points += 5
         if self.third_fastest_pitstop:
+            self.points_breakdown.third_fastest_pitstop = 3
             self._points += 3
         self.compute_constructors_qualifying_extra_points()
 
@@ -129,26 +221,31 @@ class Constructor:
 
         # None into q2 or q3
         if all(qualifying_position > 15 for qualifying_position in qualifying_positions):
+            self.points_breakdown.driver_qualifying_bonus = -1
             self._points -= 1
             return
 
         # Both into q1
         if all(qualifying_position < 10 for qualifying_position in qualifying_positions):
+            self.points_breakdown.driver_qualifying_bonus = 10
             self._points += 10
             return
 
         # One in q1
         if any(qualifying_position < 10 for qualifying_position in qualifying_positions):
+            self.points_breakdown.driver_qualifying_bonus = 5
             self._points += 5
             return
 
         # One into q2
         if any(qualifying_position > 15 for qualifying_position in qualifying_positions):
+            self.points_breakdown.driver_qualifying_bonus = 2
             self._points += 2
             return
 
         # Both into q2
         if any(qualifying_position < 15 for qualifying_position in qualifying_positions):
+            self.points_breakdown.driver_qualifying_bonus = 3
             self._points += 3
             return
 
@@ -159,7 +256,7 @@ class Constructor:
         return hash(self.name)
 
     def __repr__(self):
-        return f"{self.name} - {self.points} points"
+        return f"\n{self.name} - {self.points} points breakdown: {self.points_breakdown}"
 
 
 class Team:
@@ -192,7 +289,16 @@ class Team:
     def __repr__(self):
         drivers_ordered = sorted(self.drivers, key=lambda x: x.points, reverse=True)
         constructors_ordered = sorted(self.constructors, key=lambda x: x.points, reverse=True)
-        return f"Total: {self.points}  Drivers: {drivers_ordered}  Constructors: {constructors_ordered}"
+        driver_str = "".join([f"{driver}" for driver in drivers_ordered])
+        constructor_str = "".join([f"{constructor}" for constructor in constructors_ordered])
+        return (
+            "Team:\n"
+            + f"Total points: {self.points}"
+            + "\n\n"
+            + f"Drivers: " + driver_str
+            + "\n\n" +
+            f"Constructors: " + constructor_str
+        )
 
 
 class Drivers:
