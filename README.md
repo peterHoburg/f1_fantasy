@@ -31,7 +31,7 @@ If you ever want to revert to the original input files simply run `f1-fantasy se
 This file contains the chips you have available. The format is:
 
 ```
-chips_to_enable
+chip_to_enable
 <list of chips to enable one per line>
 ...
 ```

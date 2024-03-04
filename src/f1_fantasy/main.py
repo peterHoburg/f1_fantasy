@@ -181,7 +181,7 @@ def set_chips_from_csv(chips_csv: Path):
     with chips_csv.open() as f:
         reader = csv.DictReader(f)
         for row in reader:
-            if row["chips_to_enable"] == "extra_drs":
+            if row["chip_to_enable"] == "extra_drs":
                 SETTINGS.chips.extra_drs = True
 
 
