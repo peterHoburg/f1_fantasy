@@ -14,7 +14,8 @@ from f1_fantasy.game_objects import (
     Drivers,
     Team,
 )
-from f1_fantasy.models import ConstructorPriceModel, DriverPriceModel, FinishingPositionModel, SpecialPoints
+from f1_fantasy.models import ConstructorPriceModel, DriverPriceModel, FinishingPositionModel, SpecialPoints, \
+    DriversEnum, ConstructorsEnum
 from f1_fantasy.settings import SETTINGS
 
 
@@ -184,17 +185,33 @@ def set_chips_from_csv(chips_csv: Path):
                 SETTINGS.chips.extra_drs = True
 
 
-def main():
-    driver_prices = drivers_prices_from_csv(Path(ROOT_DIR / "data" / "input" / "prices_drivers.csv"))
-    constructor_prices = constructors_prices_from_csv(Path(ROOT_DIR / "data" / "input" / "prices_constructors.csv"))
-    qualifying_finishing_positions = finishing_positions_from_csv(
-        Path(ROOT_DIR / "data" / "input" / "qualifying_finishing_positions.csv")
-    )
-    racing_finishing_positions = finishing_positions_from_csv(
-        Path(ROOT_DIR / "data" / "input" / "race_finishing_positions.csv")
-    )
-    special_points = special_points_from_csv(Path(ROOT_DIR / "data" / "input" / "special_points.csv"))
-    set_chips_from_csv(Path(ROOT_DIR / "data" / "input" / "chips.csv"))
+def set_ignores_from_csvs(ignore_constructors: Path, ignore_drivers: Path):
+    with ignore_constructors.open() as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            constructor = ConstructorsEnum[row["name"].strip().upper()]
+            constructor = Constructors.get(constructor)
+            CONSTRUCTORS_IGNORE_LIST.append(constructor)
+
+    with ignore_drivers.open() as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            driver_enum = DriversEnum[row["name"].strip().upper()]
+            driver = Drivers.get(driver_enum)
+            DRIVERS_IGNORE_LIST.append(driver)
+
+
+def main(drivers_price_csv: Path, constructors_price_csv: Path, qualifying_finishing_positions: Path,
+         racing_finishing_positions: Path, special_points: Path, chips: Path, output_file: Path,
+         ignore_constructors: Path, ignore_drivers: Path,
+         ):
+    driver_prices = drivers_prices_from_csv(drivers_price_csv)
+    constructor_prices = constructors_prices_from_csv(constructors_price_csv)
+    qualifying_finishing_positions = finishing_positions_from_csv(qualifying_finishing_positions)
+    racing_finishing_positions = finishing_positions_from_csv(racing_finishing_positions)
+    special_points = special_points_from_csv(special_points)
+    set_chips_from_csv(chips)
+    set_ignores_from_csvs(ignore_constructors=ignore_constructors, ignore_drivers=ignore_drivers)
 
     _max_score_teams = calculations(
         driver_prices=driver_prices,
@@ -203,7 +220,6 @@ def main():
         racing_finishing_positions=racing_finishing_positions,
         special_points=special_points,
     )
-    output_file = Path(ROOT_DIR / "data" / "output" / f"{datetime.datetime.utcnow()}")
     output_file.parent.mkdir(parents=True, exist_ok=True)
     with output_file.open("w+") as f:
         for team in _max_score_teams:
@@ -214,4 +230,14 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(
+        drivers_price_csv=Path(ROOT_DIR / "data" / "input" / "prices_drivers.csv"),
+        constructors_price_csv=Path(ROOT_DIR / "data" / "input" / "prices_constructors.csv"),
+        qualifying_finishing_positions=Path(ROOT_DIR / "data" / "input" / "qualifying_finishing_positions.csv"),
+        racing_finishing_positions=Path(ROOT_DIR / "data" / "input" / "race_finishing_positions.csv"),
+        special_points=Path(ROOT_DIR / "data" / "input" / "special_points.csv"),
+        chips=Path(ROOT_DIR / "data" / "input" / "chips.csv"),
+        output_file=Path(ROOT_DIR / "data" / "output" / f"{datetime.datetime.utcnow()}"),
+        ignore_constructors=Path(ROOT_DIR / "data" / "input" / "ignore_constructors.csv"),
+        ignore_drivers=Path(ROOT_DIR / "data" / "input" / "ignore_drivers.csv"),
+    )

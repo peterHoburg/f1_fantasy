@@ -8,12 +8,71 @@ THIS IS A PERSONAL PROJECT. I spent a few hours working on this on and off. If y
 a PR or an issue. I will get around to making this more user-friendly at some point. Or not.
 
 ## Installation
+### Via pip
+`pip install f1-fantasy`
+
+### Via GitHub
 Install poetry https://python-poetry.org/docs/#installation
 run `poetry install` in the root directory
 
 ## Usage
-### Data files
-#### Pricing
+After installing via pip or poetry navigate to a directory that you want to contain the `data` directory. This will be
+referred to as the <running_dir> from now on. The data dir is a generated directory that contains the input and output
+files. Run `f1-fantasy setup` to generate those files.
+
+NOTE:
+
+If you ever want to revert to the original input files simply run `f1-fantasy setup` again.
+
+### Input
+#### Chips
+`<running_dir>/data/chips.csv`
+
+This file contains the chips you have available. The format is:
+
+```
+chips_to_enable
+<list of chips to enable one per line>
+...
+```
+Chips available are:
+```
+extra_drs
+```
+
+#### Ignore constructors/drivers
+`<running_dir>/data/ignore_constructors.csv` and `<running_dir>/data/ignore_drivers.csv`
+
+These files contain the constructors and drivers you want to ignore in the final calculation. For example, if you want
+to ignore `Max` and `Redbull` the files would look like
+
+`<running_dir>/data/ignore_constructors.csv`
+```
+constructor_name
+RED_BULL
+```
+
+`<running_dir>/data/ignore_drivers.csv`
+```
+driver_name
+MAX
+```
+
+Output without ignored drivers/constructors:
+```
+Total: 302  Drivers: [Max Verstappen - 135 points, Carlos Sainz - 68 points, Zhou Guanyu - 12 points, Kevin Magnussen - 6 points, Lance Stroll - 5 points]  Constructors: [Ferrari - 68 points, Sauber - 8 points]
+1
+```
+
+Output with ignored drivers/constructors:
+```
+Total: 290  Drivers: [Carlos Sainz - 102 points, Sergio Perez - 60 points, Zhou Guanyu - 12 points, Kevin Magnussen - 6 points, Pierre Gasly - 4 points]  Constructors: [Ferrari - 68 points, Mercedes - 38 points]
+Total: 290  Drivers: [Carlos Sainz - 102 points, Sergio Perez - 60 points, Zhou Guanyu - 12 points, Kevin Magnussen - 6 points, Esteban Ocon - 4 points]  Constructors: [Ferrari - 68 points, Mercedes - 38 points]
+2
+```
+
+Notice how neither Max nor Redbull are in the second output.
+
 All pricing is in `f1_fantasy/src/f1_fantasy/data/<constructors_prices,driver_prices>/<yyymmdd>.csv`.
 Example files are provided.
 
