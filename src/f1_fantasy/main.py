@@ -1,5 +1,4 @@
 import csv
-import datetime
 import itertools
 import time
 from copy import deepcopy
@@ -16,8 +15,14 @@ from f1_fantasy.game_objects import (
     Drivers,
     Team,
 )
-from f1_fantasy.models import ConstructorPriceModel, DriverPriceModel, FinishingPositionModel, SpecialPoints, \
-    DriversEnum, ConstructorsEnum
+from f1_fantasy.models import (
+    ConstructorPriceModel,
+    ConstructorsEnum,
+    DriverPriceModel,
+    DriversEnum,
+    FinishingPositionModel,
+    SpecialPoints,
+)
 from f1_fantasy.settings import SETTINGS
 
 
@@ -210,6 +215,7 @@ def write_csv_to_output(f: TextIO, csv_path: Path):
         for row in reader:
             f.write(str(row) + "\n")
 
+
 def main(
     chips_path: Path,
     finishing_positions_qualifying_path: Path,
@@ -260,14 +266,15 @@ def main(
     print(f"Output written to {output_file_path}")
 
 
-
 if __name__ == "__main__":
-    main(chips_path=Path(ROOT_DIR / "data" / "input" / "chips.csv"),
-         finishing_positions_qualifying_path=Path(ROOT_DIR / "data" / "input" / "finishing_positions_qualifying.csv"),
-         finishing_positions_race_path=Path(ROOT_DIR / "data" / "input" / "finishing_positions_race.csv"),
-         ignore_constructors_path=Path(ROOT_DIR / "data" / "input" / "ignore_constructors.csv"),
-         ignore_drivers_path=Path(ROOT_DIR / "data" / "input" / "ignore_drivers.csv"),
-         price_constructors_path=Path(ROOT_DIR / "data" / "input" / "price_constructors.csv"),
-         price_drivers_path=Path(ROOT_DIR / "data" / "input" / "price_drivers.csv"),
-         special_points_path=Path(ROOT_DIR / "data" / "input" / "special_points.csv"),
-         output_file_path=Path(ROOT_DIR / "data" / "output" / f"{time.time()}"))
+    main(
+        chips_path=Path(ROOT_DIR / "data" / "input" / "chips.csv"),
+        finishing_positions_qualifying_path=Path(ROOT_DIR / "data" / "input" / "finishing_positions_qualifying.csv"),
+        finishing_positions_race_path=Path(ROOT_DIR / "data" / "input" / "finishing_positions_race.csv"),
+        ignore_constructors_path=Path(ROOT_DIR / "data" / "input" / "ignore_constructors.csv"),
+        ignore_drivers_path=Path(ROOT_DIR / "data" / "input" / "ignore_drivers.csv"),
+        price_constructors_path=Path(ROOT_DIR / "data" / "input" / "price_constructors.csv"),
+        price_drivers_path=Path(ROOT_DIR / "data" / "input" / "price_drivers.csv"),
+        special_points_path=Path(ROOT_DIR / "data" / "input" / "special_points.csv"),
+        output_file_path=Path(ROOT_DIR / "data" / "output" / f"{time.time()}"),
+    )

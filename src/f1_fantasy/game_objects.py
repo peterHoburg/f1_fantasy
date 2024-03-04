@@ -295,9 +295,11 @@ class Team:
             "Team:\n"
             + f"Total points: {self.points}"
             + "\n\n"
-            + f"Drivers: " + driver_str
-            + "\n\n" +
-            f"Constructors: " + constructor_str
+            + "Drivers: "
+            + driver_str
+            + "\n\n"
+            + "Constructors: "
+            + constructor_str
         )
 
 

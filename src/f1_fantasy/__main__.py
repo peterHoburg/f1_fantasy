@@ -1,13 +1,11 @@
 import shutil
 import time
-from datetime import datetime
 from pathlib import Path
 
 import typer
 
-from f1_fantasy.consts import ROOT_DIR, CURRENT_DIR
-from f1_fantasy.main import drivers_prices_from_csv, constructors_prices_from_csv, finishing_positions_from_csv, \
-    special_points_from_csv, set_chips_from_csv, calculations, main
+from f1_fantasy.consts import CURRENT_DIR, ROOT_DIR
+from f1_fantasy.main import main
 
 app = typer.Typer()
 
@@ -42,23 +40,23 @@ def run():
         typer.echo("No input data found. Run setup command first: f1-fantasy setup")
         return
 
-    main(chips_path=Path(CURRENT_DIR / "data" / "input" / "chips.csv"), finishing_positions_qualifying_path=Path(
-        CURRENT_DIR / "data" / "input" / "finishing_positions_qualifying.csv"),
-         finishing_positions_race_path=Path(CURRENT_DIR / "data" / "input" / "finishing_positions_race.csv"),
-         ignore_constructors_path=Path(CURRENT_DIR / "data" / "input" / "ignore_constructors.csv"),
-         ignore_drivers_path=Path(CURRENT_DIR / "data" / "input" / "ignore_drivers.csv"),
-         price_constructors_path=Path(CURRENT_DIR / "data" / "input" / "price_constructors.csv"),
-         price_drivers_path=Path(CURRENT_DIR / "data" / "input" / "price_drivers.csv"),
-         special_points_path=Path(CURRENT_DIR / "data" / "input" / "special_points.csv"),
-         output_file_path=Path(CURRENT_DIR / "data" / "output" / f"{time.time()}"))
-
-
+    main(
+        chips_path=Path(CURRENT_DIR / "data" / "input" / "chips.csv"),
+        finishing_positions_qualifying_path=Path(CURRENT_DIR / "data" / "input" / "finishing_positions_qualifying.csv"),
+        finishing_positions_race_path=Path(CURRENT_DIR / "data" / "input" / "finishing_positions_race.csv"),
+        ignore_constructors_path=Path(CURRENT_DIR / "data" / "input" / "ignore_constructors.csv"),
+        ignore_drivers_path=Path(CURRENT_DIR / "data" / "input" / "ignore_drivers.csv"),
+        price_constructors_path=Path(CURRENT_DIR / "data" / "input" / "price_constructors.csv"),
+        price_drivers_path=Path(CURRENT_DIR / "data" / "input" / "price_drivers.csv"),
+        special_points_path=Path(CURRENT_DIR / "data" / "input" / "special_points.csv"),
+        output_file_path=Path(CURRENT_DIR / "data" / "output" / f"{time.time()}"),
+    )
 
 
 def version_callback(value: bool):
     import pkg_resources
 
-    my_version = pkg_resources.get_distribution('f1-fantasy').version
+    my_version = pkg_resources.get_distribution("f1-fantasy").version
     if value:
         typer.echo(f"{my_version}")
         raise typer.Exit()
