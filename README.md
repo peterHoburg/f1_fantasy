@@ -76,7 +76,8 @@ Notice how neither Max nor Redbull are in the second output.
 All pricing is in `f1_fantasy/src/f1_fantasy/data/<constructors_prices,driver_prices>/<yyymmdd>.csv`.
 Example files are provided.
 
-#### Input
+
+
 Input files are where you specify what you think the qualifying and race finishing positions will be.
 These are:
 ```

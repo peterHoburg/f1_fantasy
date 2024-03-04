@@ -27,15 +27,15 @@ def setup():
 
 @app.command()
 def run():
-    if Path(CURRENT_DIR / "data" / "input" / "prices_drivers.csv").exists() is False:
+    if Path(CURRENT_DIR / "data" / "input" / "price_drivers.csv").exists() is False:
         typer.echo("No input data found. Run setup command first: f1-fantasy setup")
         return
 
     main(
-        drivers_price_csv=Path(CURRENT_DIR / "data" / "input" / "prices_drivers.csv"),
-        constructors_price_csv=Path(CURRENT_DIR / "data" / "input" / "prices_constructors.csv"),
-        qualifying_finishing_positions=Path(CURRENT_DIR / "data" / "input" / "qualifying_finishing_positions.csv"),
-        racing_finishing_positions= Path(CURRENT_DIR / "data" / "input" / "race_finishing_positions.csv"),
+        drivers_price_csv=Path(CURRENT_DIR / "data" / "input" / "price_drivers.csv"),
+        constructors_price_csv=Path(CURRENT_DIR / "data" / "input" / "price_constructors.csv"),
+        qualifying_finishing_positions=Path(CURRENT_DIR / "data" / "input" / "finishing_positions_qualifying.csv"),
+        racing_finishing_positions= Path(CURRENT_DIR / "data" / "input" / "finishing_positions_race.csv"),
         special_points=Path(CURRENT_DIR / "data" / "input" / "special_points.csv"),
         chips=Path(CURRENT_DIR / "data" / "input" / "chips.csv"),
         output_file=Path(CURRENT_DIR / "data" / "output" / f"{datetime.utcnow()}"),

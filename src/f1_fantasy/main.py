@@ -231,10 +231,10 @@ def main(drivers_price_csv: Path, constructors_price_csv: Path, qualifying_finis
 
 if __name__ == "__main__":
     main(
-        drivers_price_csv=Path(ROOT_DIR / "data" / "input" / "prices_drivers.csv"),
-        constructors_price_csv=Path(ROOT_DIR / "data" / "input" / "prices_constructors.csv"),
-        qualifying_finishing_positions=Path(ROOT_DIR / "data" / "input" / "qualifying_finishing_positions.csv"),
-        racing_finishing_positions=Path(ROOT_DIR / "data" / "input" / "race_finishing_positions.csv"),
+        drivers_price_csv=Path(ROOT_DIR / "data" / "input" / "price_drivers.csv"),
+        constructors_price_csv=Path(ROOT_DIR / "data" / "input" / "price_constructors.csv"),
+        qualifying_finishing_positions=Path(ROOT_DIR / "data" / "input" / "finishing_positions_qualifying.csv"),
+        racing_finishing_positions=Path(ROOT_DIR / "data" / "input" / "finishing_positions_race.csv"),
         special_points=Path(ROOT_DIR / "data" / "input" / "special_points.csv"),
         chips=Path(ROOT_DIR / "data" / "input" / "chips.csv"),
         output_file=Path(ROOT_DIR / "data" / "output" / f"{datetime.datetime.utcnow()}"),
