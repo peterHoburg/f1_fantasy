@@ -427,10 +427,6 @@ class Constructors:
             cls.get(constructor_price.name).price = float(constructor_price.price)
 
 
-DRIVERS_IGNORE_LIST = [
-    # Drivers.MAX,
-]
+DRIVERS_IGNORE_LIST = []
 
-CONSTRUCTORS_IGNORE_LIST = [
-    # Constructors.RED_BULL,
-]
+CONSTRUCTORS_IGNORE_LIST = []

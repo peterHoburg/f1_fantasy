@@ -209,11 +209,15 @@ def set_ignores_from_csvs(ignore_constructors: Path, ignore_drivers: Path):
 
 
 def write_csv_to_output(f: TextIO, csv_path: Path):
-    with csv_path.open() as cp_csv:
-        reader = csv.DictReader(cp_csv)
+    with csv_path.open() as read_csv:
+        reader = csv.DictReader(read_csv)
+        dict_writer = csv.DictWriter(f, reader.fieldnames)
+
+        f.write("\n" + "#" * 120)
         f.write(f"\n{csv_path.name}:\n")
+        dict_writer.writeheader()
         for row in reader:
-            f.write(str(row) + "\n")
+            dict_writer.writerow(row)
 
 
 def main(
@@ -248,7 +252,7 @@ def main(
         f.write(f"Total teams: {len(_max_score_teams)}\n")
         for team in _max_score_teams:
             print(team)
-            f.write(f"{team}\n")
+            f.write(f"{team}\n\n")
 
         f.write("\n" + "#" * 120)
         f.write("\n" + "#" * 120)
