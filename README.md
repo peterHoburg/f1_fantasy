@@ -33,12 +33,20 @@ This file contains the chips you have available. The format is:
 ```
 chip_to_enable
 <list of chips to enable one per line>
-...
 ```
 Chips available are:
 ```
 extra_drs
 ```
+
+#### Finishing Positions qualifying/race
+`<running_dir>/data/finishing_positions_qualifying.csv` and `<running_dir>/data/finishing_positions_race.csv`
+
+Input files are where you specify what you think the qualifying and race finishing positions will be.
+
+The positions are inferred by the order the drivers are listed in the file. The top driver is p1, last driver is p20.
+
+The finishing position files contain the results from the first race of the 2024 season.
 
 #### Ignore constructors/drivers
 `<running_dir>/data/ignore_constructors.csv` and `<running_dir>/data/ignore_drivers.csv`
@@ -73,26 +81,43 @@ Total: 290  Drivers: [Carlos Sainz - 102 points, Sergio Perez - 60 points, Zhou 
 
 Notice how neither Max nor Redbull are in the second output.
 
-All pricing is in `f1_fantasy/src/f1_fantasy/data/<constructors_prices,driver_prices>/<yyymmdd>.csv`.
-Example files are provided.
 
+#### Pricing constructors/drivers
+`<running_dir>/data/price_constructors.csv` and `<running_dir>/data/price_drivers.csv`
+This is where you specify the price of the drivers and constructors. The format is:
 
-
-Input files are where you specify what you think the qualifying and race finishing positions will be.
-These are:
 ```
-f1_fantasy/src/f1_fantasy/data/input/qualifying_finishing_positions.csv
-f1_fantasy/src/f1_fantasy/data/input/race_finishing_positions.csv
+name,price
+<name all caps>,<price>
 ```
-Example files are provided.
 
-The positions are inferred by the order the drivers are listed in the file. The top driver is p1, last driver is p20.
+Both files already have all driver and constructors.
+
+WARNING: The current prices might not be correct! Please double-check the prices before running the script.
+
+#### Special Points
+`<running_dir>/data/special_points.csv`
+
+This is where you specify who will receive the special points for each race. The available special points are:
+```
+fastest_lap
+driver_of_the_day
+fastest_pitstop
+second_fastest_pitstop
+third_fastest_pitstop
+```
+
+The file already contains the special points for the first race of 2024.
 
 #### Output
 This is where the output will be written to
-`f1_fantasy/src/f1_fantasy/data/output/<yyyy-mm-dd hh:mm:ss.ms>`
+`f1_fantasy/src/f1_fantasy/data/output/<epoch_time>`
 
 ### Running
+#### Via pip
+Run `f1-fantasy run`
+
+#### Via poetry
 Run `poetry run python src/f1_fantasy/main.py`
 
 ## Known limitations
