@@ -26,6 +26,17 @@ def setup():
 
 
 @app.command()
+def update_prices():
+    current_price_drivers = Path(CURRENT_DIR / "data" / "input" / "price_drivers.csv")
+    new_price_drivers = Path(ROOT_DIR / "data" / "input" / "price_drivers.csv")
+    new_price_drivers.replace(current_price_drivers)
+
+    current_price_constructors = Path(CURRENT_DIR / "data" / "input" / "price_constructors.csv")
+    new_price_constructors = Path(ROOT_DIR / "data" / "input" / "price_constructors.csv")
+    new_price_constructors.replace(current_price_constructors)
+
+
+@app.command()
 def run():
     if Path(CURRENT_DIR / "data" / "input" / "price_drivers.csv").exists() is False:
         typer.echo("No input data found. Run setup command first: f1-fantasy setup")
