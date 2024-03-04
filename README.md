@@ -68,15 +68,37 @@ MAX
 
 Output without ignored drivers/constructors:
 ```
-Total: 302  Drivers: [Max Verstappen - 135 points, Carlos Sainz - 68 points, Zhou Guanyu - 12 points, Kevin Magnussen - 6 points, Lance Stroll - 5 points]  Constructors: [Ferrari - 68 points, Sauber - 8 points]
-1
+Team:
+Total points: 301
+
+Drivers:
+Max Verstappen - 135 points: breakdown: qualifying: 10 race_position: 25 race_position_changed: 0 race_overtake_bonus: 0  fastest_lap: 10  drs_multiplier: 3  total_pre_drs: 45
+Carlos Sainz - 68 points: breakdown: qualifying: 7 race_position: 15 race_position_changed: 1 race_overtake_bonus: 1  driver_of_the_day: 10  drs_multiplier: 2  total_pre_drs: 34
+Zhou Guanyu - 12 points: breakdown: qualifying: 0 race_position: 0 race_position_changed: 6 race_overtake_bonus: 6  total_pre_drs: 12
+Kevin Magnussen - 6 points: breakdown: qualifying: 0 race_position: 0 race_position_changed: 3 race_overtake_bonus: 3  total_pre_drs: 6
+Esteban Ocon - 4 points: breakdown: qualifying: 0 race_position: 0 race_position_changed: 2 race_overtake_bonus: 2  total_pre_drs: 4
+
+Constructors:
+Ferrari - 68 points breakdown: qualifying: 16 driver_qualifying_bonus: 10 race_position: 27 race_position_changed: -1 race_overtake_bonus: 1  fastest_pitstop: 10  second_fastest_pitstop: 5
+Sauber - 8 points breakdown: qualifying: 0 driver_qualifying_bonus: -1 race_position: 0 race_position_changed: 3 race_overtake_bonus: 6
 ```
 
 Output with ignored drivers/constructors:
 ```
-Total: 290  Drivers: [Carlos Sainz - 102 points, Sergio Perez - 60 points, Zhou Guanyu - 12 points, Kevin Magnussen - 6 points, Pierre Gasly - 4 points]  Constructors: [Ferrari - 68 points, Mercedes - 38 points]
-Total: 290  Drivers: [Carlos Sainz - 102 points, Sergio Perez - 60 points, Zhou Guanyu - 12 points, Kevin Magnussen - 6 points, Esteban Ocon - 4 points]  Constructors: [Ferrari - 68 points, Mercedes - 38 points]
-2
+Total teams: 1
+Team:
+Total points: 284
+
+Drivers:
+Carlos Sainz - 102 points: breakdown: qualifying: 7 race_position: 15 race_position_changed: 1 race_overtake_bonus: 1  driver_of_the_day: 10  drs_multiplier: 3  total_pre_drs: 34
+Sergio Perez - 60 points: breakdown: qualifying: 6 race_position: 18 race_position_changed: 3 race_overtake_bonus: 3  drs_multiplier: 2  total_pre_drs: 30
+Zhou Guanyu - 12 points: breakdown: qualifying: 0 race_position: 0 race_position_changed: 6 race_overtake_bonus: 6  total_pre_drs: 12
+Kevin Magnussen - 6 points: breakdown: qualifying: 0 race_position: 0 race_position_changed: 3 race_overtake_bonus: 3  total_pre_drs: 6
+Logan Sargeant - -2 points: breakdown: qualifying: 0 race_position: 0 race_position_changed: -2 race_overtake_bonus: 0  total_pre_drs: -2
+
+Constructors:
+Ferrari - 68 points breakdown: qualifying: 16 driver_qualifying_bonus: 10 race_position: 27 race_position_changed: -1 race_overtake_bonus: 1  fastest_pitstop: 10  second_fastest_pitstop: 5
+Mercedes - 38 points breakdown: qualifying: 10 driver_qualifying_bonus: 10 race_position: 16 race_position_changed: 0 race_overtake_bonus: 2
 ```
 
 Notice how neither Max nor Redbull are in the second output.
