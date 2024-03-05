@@ -39,6 +39,11 @@ Chips available are:
 extra_drs
 ```
 
+## Current Team
+`<running_dir>/data/current_team.csv`
+Your current team. If put all 5 drivers and 2 constructors in the file the transfer costs will be taken into account.
+
+
 ## Finishing Positions qualifying/race
 `<running_dir>/data/finishing_positions_qualifying.csv` and `<running_dir>/data/finishing_positions_race.csv`
 

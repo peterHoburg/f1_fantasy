@@ -267,10 +267,12 @@ class Team:
         self.price = sum(driver.price for driver in self.drivers) + sum(
             constructor.price for constructor in self.constructors
         )
+        self.transfer_cost = 0
 
     def compute_points(self):
         self.points = 0
         # get driver with most points and second most points
+        self.points += self.transfer_cost
         for driver in self.drivers:
             driver.extra_drs = False
             driver.drs = False
@@ -430,3 +432,5 @@ class Constructors:
 DRIVERS_IGNORE_LIST = []
 
 CONSTRUCTORS_IGNORE_LIST = []
+
+CURRENT_TEAM: Team | None = None

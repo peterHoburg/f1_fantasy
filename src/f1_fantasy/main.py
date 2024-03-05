@@ -14,6 +14,7 @@ from f1_fantasy.game_objects import (
     Driver,
     Drivers,
     Team,
+    CURRENT_TEAM
 )
 from f1_fantasy.models import (
     ConstructorPriceModel,
@@ -89,6 +90,22 @@ def compute_constructor_combinations():
     return all_constructor_set
 
 
+def compute_transfer_cost(new_team: Team, old_team: Team):
+    point_cost = 20
+    for driver in new_team.drivers:
+        if driver not in old_team.drivers:
+            point_cost -= 10
+
+    for constructor in new_team.constructors:
+        if constructor not in old_team.constructors:
+            point_cost -= 10
+
+    if point_cost > 0:
+        return 0
+    return point_cost
+
+
+
 def compute_driver_constructor_combinations(drivers_set: set[Driver], constructors_set: set[Constructor]):
     all_combinations = itertools.product(drivers_set, constructors_set)
     all_teams_set = set()
@@ -100,6 +117,8 @@ def compute_driver_constructor_combinations(drivers_set: set[Driver], constructo
         if cost > MAX_TOTAL_COST:
             continue
         team = Team(drivers=list(combo[0]), constructors=list(combo[1]))
+        if CURRENT_TEAM is not None:
+            team.transfer_cost = compute_transfer_cost(team, CURRENT_TEAM)
         team.compute_points()
         if team.points >= highest_score:
             highest_score = team.points
@@ -108,7 +127,7 @@ def compute_driver_constructor_combinations(drivers_set: set[Driver], constructo
     highest_score_set = set()
     for team in all_teams_set:
         if team.points >= highest_score:
-            team_copy = Team(drivers=deepcopy(team.drivers), constructors=deepcopy(team.constructors))
+            team_copy = deepcopy(team)
             team_copy.compute_points()
             highest_score_set.add(team_copy)
     return highest_score_set
@@ -208,6 +227,27 @@ def set_ignores_from_csvs(ignore_constructors: Path, ignore_drivers: Path):
             DRIVERS_IGNORE_LIST.append(driver)
 
 
+def set_current_team_from_csv(current_team_csv: Path):
+    global CURRENT_TEAM
+
+    with current_team_csv.open() as f:
+        reader = csv.DictReader(f)
+        drivers = []
+        constructors = []
+        for row in reader:
+            name = row["name"].strip().upper()
+            if name in DriversEnum.__members__:
+                drivers.append(Drivers.get(DriversEnum[name]))
+            else:
+                constructors.append(Constructors.get(ConstructorsEnum[name]))
+
+    if len(drivers) != 5 or len(constructors) != 2:
+        print("Not setting current team. Must have 5 drivers and 2 constructors")
+        CURRENT_TEAM = None
+        return
+    team = Team(drivers=drivers, constructors=constructors)
+    CURRENT_TEAM = team
+
 def write_csv_to_output(f: TextIO, csv_path: Path):
     with csv_path.open() as read_csv:
         reader = csv.DictReader(read_csv)
@@ -230,6 +270,7 @@ def main(
     price_drivers_path: Path,
     special_points_path: Path,
     output_file_path: Path,
+    current_team_csv: Path,
 ):
     driver_prices = drivers_prices_from_csv(price_drivers_path)
     constructor_prices = constructors_prices_from_csv(price_constructors_path)
@@ -238,6 +279,7 @@ def main(
     special_points = special_points_from_csv(special_points_path)
     set_chips_from_csv(chips_path)
     set_ignores_from_csvs(ignore_constructors=ignore_constructors_path, ignore_drivers=ignore_drivers_path)
+    set_current_team_from_csv(current_team_csv)
 
     _max_score_teams = calculations(
         driver_prices=driver_prices,
@@ -266,6 +308,8 @@ def main(
         write_csv_to_output(f, price_constructors_path)
         write_csv_to_output(f, price_drivers_path)
         write_csv_to_output(f, special_points_path)
+        write_csv_to_output(f, current_team_csv)
+
 
     print(f"Output written to {output_file_path}")
 
@@ -281,4 +325,5 @@ if __name__ == "__main__":
         price_drivers_path=Path(ROOT_DIR / "data" / "input" / "price_drivers.csv"),
         special_points_path=Path(ROOT_DIR / "data" / "input" / "special_points.csv"),
         output_file_path=Path(ROOT_DIR / "data" / "output" / f"{time.time()}"),
+        current_team_csv=Path(ROOT_DIR / "data" / "input" / "current_team.csv"),
     )
