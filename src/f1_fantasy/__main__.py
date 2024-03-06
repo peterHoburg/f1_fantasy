@@ -50,6 +50,7 @@ def run():
         price_drivers_path=Path(CURRENT_DIR / "data" / "input" / "price_drivers.csv"),
         special_points_path=Path(CURRENT_DIR / "data" / "input" / "special_points.csv"),
         output_file_path=Path(CURRENT_DIR / "data" / "output" / f"{time.time()}"),
+        current_team_csv=Path(CURRENT_DIR / "data" / "input" / "current_team.csv"),
     )
 
 
