@@ -349,22 +349,22 @@ def update_prices():
 
 
 @app.command()
-def run():
-    if Path(CURRENT_DIR / "data" / "input" / "price_drivers.csv").exists() is False:
+def run(current_dir: Path = CURRENT_DIR):
+    if Path(current_dir / "data" / "input" / "price_drivers.csv").exists() is False:
         typer.echo("No input data found. Run setup command first: f1-fantasy setup")
         return
 
     main(
-        chips_path=Path(CURRENT_DIR / "data" / "input" / "chips.csv"),
-        finishing_positions_qualifying_path=Path(CURRENT_DIR / "data" / "input" / "finishing_positions_qualifying.csv"),
-        finishing_positions_race_path=Path(CURRENT_DIR / "data" / "input" / "finishing_positions_race.csv"),
-        ignore_constructors_path=Path(CURRENT_DIR / "data" / "input" / "ignore_constructors.csv"),
-        ignore_drivers_path=Path(CURRENT_DIR / "data" / "input" / "ignore_drivers.csv"),
-        price_constructors_path=Path(CURRENT_DIR / "data" / "input" / "price_constructors.csv"),
-        price_drivers_path=Path(CURRENT_DIR / "data" / "input" / "price_drivers.csv"),
-        special_points_path=Path(CURRENT_DIR / "data" / "input" / "special_points.csv"),
-        output_file_path=Path(CURRENT_DIR / "data" / "output" / f"{time.time()}"),
-        current_team_csv=Path(CURRENT_DIR / "data" / "input" / "current_team.csv"),
+        chips_path=Path(current_dir / "data" / "input" / "chips.csv"),
+        finishing_positions_qualifying_path=Path(current_dir / "data" / "input" / "finishing_positions_qualifying.csv"),
+        finishing_positions_race_path=Path(current_dir / "data" / "input" / "finishing_positions_race.csv"),
+        ignore_constructors_path=Path(current_dir / "data" / "input" / "ignore_constructors.csv"),
+        ignore_drivers_path=Path(current_dir / "data" / "input" / "ignore_drivers.csv"),
+        price_constructors_path=Path(current_dir / "data" / "input" / "price_constructors.csv"),
+        price_drivers_path=Path(current_dir / "data" / "input" / "price_drivers.csv"),
+        special_points_path=Path(current_dir / "data" / "input" / "special_points.csv"),
+        output_file_path=Path(current_dir / "data" / "output" / f"{time.time()}"),
+        current_team_csv=Path(current_dir / "data" / "input" / "current_team.csv"),
     )
 
 

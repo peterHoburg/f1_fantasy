@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Peter Hoburg", email = "peterHoburg@users.noreply.github.com" }
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = [
     "httpx>=0.28.1",
     "pydantic>=2.10.6",
